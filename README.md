@@ -5,13 +5,14 @@
      width="200"
      align="right">
 
-# bilbyr
+### bilbyr
+
+<strong> Behavioural Investigation of Low-dimensional<br> projections
+Before Your tour in R </strong>
 
 <!-- badges: start -->
 
 <!-- badges: end -->
-
-## Behavioural Investigation of Low-dimensional projections Before Your tour in R
 
 `bilbyr` is an R package for **diagnosing, exploring, and benchmarking
 projection pursuit indices (PPIs)** before and during their use in
