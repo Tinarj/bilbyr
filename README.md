@@ -3,17 +3,14 @@
 
 <h1>
 
-bilbyr <img src="man/figures/bilbyr.png"
+<img src="man/figures/bilbyr.png"
        alt="bilbyr logo"
-       width="190"
+       width="200"
        align="right">
+
+bilbyr <br><br> Behavioural Investigation of Low-dimensional<br>
+projections Before Your tour in R
 </h1>
-
-<p>
-
-<big><big><strong> Behavioural Investigation of Low-dimensional<br>
-projections Before Your tour in R </strong></big></big>
-</p>
 
 <!-- badges: start -->
 
