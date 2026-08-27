@@ -1,19 +1,35 @@
 Package: bilbyr
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Diagnostic Tools for Projection Pursuit Indices
 Version: 0.1.0
 Authors@R: c(
     person(
-      "Jane", "Doe",
-      email = "jane@example.com",
+      "Tina",
+      "Rashid Jafari",
+      email = "tina.rashidjafari@gmail.com",
       role = c("aut", "cre")
     )
   )
-Description: More about what it does (maybe more than one line).
-    Continuation lines should be indented.
+Description: Provides tools for investigating, diagnosing, and benchmarking
+    candidate projection pursuit indices before and during their use in
+    guided tours. The package supports exploration of signal and noise
+    behaviour, null distributions, sample-size effects, index calibration,
+    optimisation behaviour, and recovery of informative projections.
+    Scagnostic indices are used as initial case studies.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Suggests: 
+    ferrn,
+    spinebil,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
+Imports: 
+    cassowaryr,
+    dplyr,
+    ggplot2,
+    purrr,
+    tibble,
+    tourr
+Roxygen: list(markdown = TRUE)
+Config/roxygen2/version: 8.0.0
