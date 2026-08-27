@@ -4,17 +4,22 @@ output: github_document
 
 <!-- README.md is generated from README.Rmd. Please edit README.Rmd instead. -->
 
-<img src="man/figures/bilbyr.png"
-     width="200"
-     align="right">
-     
-### bilbyr
+<h1>
+  bilbyr
+  <img src="man/figures/bilbyr.png"
+       alt="bilbyr logo"
+       width="190"
+       align="right">
+</h1>
 
 
-<strong>
-Behavioural Investigation of Low-dimensional<br>
-projections Before Your tour in R
-</strong>
+
+<p>
+  <big><big><strong>
+  Behavioural Investigation of Low-dimensional<br>
+  projections Before Your tour in R
+  </strong></big></big>
+</p>
 
 <!-- badges: start -->
 <!-- badges: end -->
