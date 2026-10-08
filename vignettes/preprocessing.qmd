@@ -1,0 +1,226 @@
+---
+title: "Scagnostic-based preprocessing for projection pursuit"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Scagnostic-based preprocessing for projection pursuit}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+format:
+  html:
+    toc: true
+    toc-depth: 3
+execute:
+  echo: true
+code-fold: true
+warning: FALSE
+message: FALSE
+---
+
+```{r setup, include=FALSE}
+library(bilbyr)
+library(cassowaryr)
+library(dplyr)
+library(ggplot2)
+```
+
+## Why preprocess high-dimensional data?
+
+Finding interesting projections in high-dimensional data can be
+computationally challenging. Many candidate projections may resemble
+Gaussian noise, while informative structures may involve only a small
+subset of variables.
+
+`bilbyr` provides `scag_preprocess()` to calculate a selected
+scagnostic for every pair of numeric variables and rank the pairs
+in descending order of their scores.
+
+These rankings provide an initial guide for projection-pursuit
+optimizers, potentially helping them prioritize informative regions
+of the search space.
+
+## Exploring a real dataset
+
+We begin with the wide-format Datasaurus dataset from `cassowaryr`.
+
+```{r}
+data("datasaurus_dozen_wide", package = "cassowaryr")
+
+x <- datasaurus_dozen_wide[, c(
+  "star_x", "star_y",
+  "circle_x", "circle_y"
+)]
+
+prep <- scag_preprocess(
+  x,
+  scag = "stringy05",
+  rescale = TRUE,
+  binner = NULL,
+  out.rm = FALSE
+)
+
+prep$pair_scores
+```
+
+The function evaluates every unique variable pair and places the
+highest-scoring pair first. This allows us to identify potentially
+interesting bivariate views without manually inspecting every
+scatterplot.
+
+## Can preprocessing recover a hidden pattern?
+
+We now generate an eight-dimensional dataset containing six Gaussian
+noise variables and a sine-wave relationship hidden in `V3` and `V4`.
+
+```{r}
+set.seed(1050)
+
+n <- 500
+p <- 8
+
+X <- as.data.frame(matrix(rnorm(n * p), ncol = p))
+names(X) <- paste0("V", 1:p)
+
+t <- seq(-1, 1, length.out = n)
+
+X$V3 <- t + rnorm(n, sd = 0.005)
+X$V4 <- sin(2 * pi * t) + rnorm(n, sd = 0.005)
+
+ggplot(X, aes(V3, V4)) +
+  geom_point(size = 0.6) +
+  theme(aspect.ratio = 1) +
+  theme_bw()
+```
+
+The relationship is clearly visible when the correct variables are
+plotted, but it is hidden among the other dimensions.
+
+We apply preprocessing using rescaled Stringy05 index:
+
+```{r}
+prep_signal <- scag_preprocess(
+  X,
+  scag = "stringy05",
+  rescale = TRUE,
+  binner = NULL,
+  out.rm = FALSE
+)
+
+head(prep_signal$pair_scores, 10)
+```
+
+We can examine the ranking of the true signal directly:
+
+```{r}
+signal_rank <- prep_signal$pair_scores |>
+  filter(var1 == "V3", var2 == "V4")
+
+signal_rank
+```
+
+For this simulation, the sine-wave pair receives rank
+`r signal_rank$rank` out of `r choose(p, 2)` possible pairs.
+
+A high ranking indicates that preprocessing successfully prioritizes
+the hidden structure. However, this result depends on the pattern,
+noise level, and scagnostic used; recovering every interesting
+structure is not guaranteed.
+
+## Why is noise rescaling important?
+
+A useful projection pursuit index (PPI) should assign high scores to
+interesting patterns and comparatively low scores to unstructured
+noise.
+
+This is particularly important in high-dimensional data, where
+exploring many projections can produce numerous approximately
+Gaussian bivariate views.
+
+The original Stringy05 index can assign positive scores to Gaussian
+noise. To account for this, we use a sample-size-dependent noise
+cutoff estimated from the 95th percentile of Gaussian simulations:
+
+$$
+l(n) = 0.05 + \frac{3.86}{\sqrt{n}}.
+$$
+
+The rescaled score is
+
+$$
+S^* = \max\left(0,\frac{S-l(n)}{1-l(n)}\right).
+$$
+
+Scores below the estimated cutoff become zero, while scores above
+it remain positive after rescaling.
+
+### Comparing original and rescaled Stringy05
+
+We generate eight independent Gaussian noise variables and evaluate
+both versions on exactly the same data.
+
+```{r}
+set.seed(1050)
+
+X_noise <- as.data.frame(matrix(rnorm(n * p), ncol = p))
+names(X_noise) <- paste0("V", 1:p)
+
+prep_raw <- scag_preprocess(
+  X_noise,
+  scag = "stringy05",
+  rescale = FALSE,
+  binner = NULL,
+  out.rm = FALSE
+)
+
+prep_rescaled <- scag_preprocess(
+  X_noise,
+  scag = "stringy05",
+  rescale = TRUE,
+  binner = NULL,
+  out.rm = FALSE
+)
+```
+
+Join the results to compare the two scores for each pair:
+
+```{r}
+comparison <- prep_raw$pair_scores |>
+  select(var1, var2, raw = score) |>
+  inner_join(
+    prep_rescaled$pair_scores |>
+      select(var1, var2, rescaled = score),
+    by = c("var1", "var2")
+  )
+
+comparison
+```
+
+
+
+
+Rescaling suppresses scores that fall below the estimated
+Gaussian-noise threshold, reducing the prominence of these views.
+It does not guarantee that every noise view receives a zero score:
+the cutoff is calibrated for individual Gaussian views, and some
+noise pairs may exceed it by chance.
+
+Because all pairs have the same sample size, rescaling preserves
+their score ordering except where values are tied at zero.
+
+## Implications for projection pursuit
+
+These experiments illustrate two complementary goals of preprocessing:
+prioritizing structured variable pairs and suppressing the scores of
+unstructured Gaussian views.
+
+In projection pursuit, assigning low scores to noise-like views may
+reduce their attractiveness to an optimizer, allowing more search
+effort to be directed toward interesting structures. The highest-ranked
+pairs could also provide informed starting projections.
+
+However, pairwise preprocessing considers only coordinate-aligned
+views. Interesting structures may exist in combinations of variables
+that are not apparent in any original pair. Therefore, pair rankings
+are intended to guide, rather than replace, the optimizer's search.
+
+Whether preprocessing improves optimization speed and recovery will
+be evaluated separately through repeated simulations.

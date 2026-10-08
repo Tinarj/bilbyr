@@ -8,8 +8,9 @@
        width="200"
        align="right">
 
-bilbyr <br><br> Behavioural Investigation of Low-dimensional<br>
-projections Before Your tour in R
+bilbyr <br><br> Behavioural Investigation of Low-dimensional projections
+Before Your tour in R<br> Developing and optimising scagnostics for
+projection pursuit
 </h1>
 
 <!-- badges: start -->

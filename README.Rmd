@@ -12,8 +12,8 @@ output: github_document
 
   bilbyr
   <br><br>
-  Behavioural Investigation of Low-dimensional<br>
-  projections Before Your tour in R
+  Behavioural Investigation of Low-dimensional projections Before Your tour in R<br>
+  Developing and optimising scagnostics for projection pursuit
 </h1>
 
 <!-- badges: start -->
@@ -155,5 +155,10 @@ pak::pak("Tinarj/bilbyr")
 ## Acknowledgements
 
 The ideas behind `bilbyr` grew from research on projection pursuit, scagnostics, guided tours, and diagnostic tools in the R visualisation ecosystem, particularly the work surrounding `tourr`, `cassowaryr`, `spinebil`, and `ferrn`.
+
+
+
+
+
 
 
