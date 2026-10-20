@@ -5,7 +5,7 @@ output: github_document
 <!-- README.md is generated from README.Rmd. Please edit README.Rmd instead. -->
 
 <h1>
-  <img src="man/figures/bilbyr.png"
+  <img src="man/figures/logo.svg"
        alt="bilbyr logo"
        width="200"
        align="right">

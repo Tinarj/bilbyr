@@ -3,7 +3,7 @@
 
 <h1>
 
-<img src="man/figures/bilbyr.png"
+<img src="man/figures/logo.svg"
        alt="bilbyr logo"
        width="200"
        align="right">
