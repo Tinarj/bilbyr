@@ -1,0 +1,496 @@
+---
+title: "How does Gaussian noise affect the Stringy05 index?"
+subtitle: "A simulation study using four patterns and eight sample sizes"
+
+format:
+  html:
+    toc: true
+    number-sections: true
+    code-fold: true
+    fig-width: 10
+    fig-height: 6
+
+  pdf:
+    toc: true
+    number-sections: true
+    fig-width: 8
+    fig-height: 5
+    geometry:
+      - margin=1in
+
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+# Introduction
+
+This report investigates how the **rescaled Stringy05 scagnostic** changes when Gaussian noise is added to two-dimensional data. Stringy05 describes a geometric property of a scatterplot using a minimum spanning tree (MST). We want to learn how much noise the index can tolerate, whether its behaviour depends on the type of pattern, and whether results change with sample size.
+
+The eventual goal is to design synthetic datasets with **500 observations** for experiments in projection pursuit. The simulations here help us choose noise levels based on measured changes in Stringy05 rather than visual judgement alone.
+
+In our rescaled index, **0 indicates that Stringy05 has reached its Gaussian-reference floor**. It does not prove that there is no relationship between the variables. A positive value indicates that the index measures some Stringy structure above that floor.
+
+# Simulation setup
+
+## Four patterns
+
+We study the following noise-free patterns:
+
+- **Cubic:** `poly(t, degree = 3)[, 3]`, where `t` is drawn from a standard normal distribution.
+- **Quartic:** `poly(t, degree = 4)[, 4]`, using the same type of input variable.
+- **Sine:** `sin(pi * t)`, where `t` is standard normal.
+- **Two moons:** two interleaving semicircular arcs.
+
+The cubic and quartic patterns use R's *orthogonal polynomial basis*, rather than simply `t^3` and `t^4`. For every pattern, the original X and Y coordinates are standardised separately to have mean 0 and sample standard deviation 1.
+
+## How noise was added
+
+Noise was added independently to **both X and Y**:
+
+$$
+X_{i,\sigma,r}=X_{i,0}+\varepsilon_{x,i,\sigma,r},\qquad
+Y_{i,\sigma,r}=Y_{i,0}+\varepsilon_{y,i,\sigma,r},
+$$
+
+where both noise terms are drawn independently from $N(0,\sigma^2)$.
+
+Scagnostics describe **bivariate scatterplots**, so perturbing both coordinates is a useful symmetric way to investigate changes in their geometry. Adding noise only to Y would instead investigate a particular directional noise model. The noisy coordinates are not standardised again after adding noise.
+
+## Sample sizes, noise levels and repetitions
+
+| Setting | Values |
+|:--|:--|
+| Patterns | Cubic, quartic, sine, two moons |
+| Sample sizes | 100, 200, 300, 500, 750, 1000, 1500, 2000 |
+| Noise SD | 20 equally spaced values from 0 to 1 |
+| Repetitions | 100 per pattern, sample size and noise level |
+| Base seed | 1111 |
+| Index | `cassowaryr::sc_stringy05(..., rescale = TRUE)` |
+
+There are $4\times8\times20\times100=64{,}000$ planned index calculations.
+
+For each combination of pattern and sample size, the original structure is generated once and kept fixed. Every repetition adds a new noise realisation to this same structure. Therefore, the differences between repetitions come from noise, not from a new sample of the original curve. At noise SD = 0, all 100 repetitions have the same data and score.
+
+The original structure uses `set.seed(1111)`. Noise repetition 1 uses seed 1112, repetition 2 uses 1113, and so on through 1211. The same repetition seed is used at each noise level, so noise realisations can be compared consistently across levels.
+
+## How the simulations were run
+
+The simulations were run using an R script and a Bash launcher in the terminal. This example runs the quartic pattern at sample size 100, with 100 repetitions at 20 noise levels:
+
+```bash
+bash experiments/stringy_index/stringy_noise.sh \
+  quartic \
+  100 \
+  1 \
+  100 \
+  1111 \
+  experiments/stringy_index/results/quartic_n100.csv \
+  "$(Rscript -e 'cat(paste(seq(0, 1, length.out = 20), collapse = ","))')"
+```
+
+Each completed Stringy05 result was appended to a CSV file. The output records the pattern, sample size, noise SD, repetition, noise seed and score. With the generating code and seed, the original structure and each noisy point cloud can be recreated without storing every noisy dataset.
+
+# Load and combine simulation results
+
+All simulation CSV files are stored in `experiments/stringy_index/results/`. We read and combine them into one table for analysis.
+
+```{r}
+#| label: load-data
+library(tidyverse)
+library(here)
+
+# Main settings for this report
+base_seed <- 1111
+visual_n <- 500
+patterns <- c("cubic", "quartic", "sine", "two_moons")
+sample_sizes <- c(100, 200, 300, 500, 750, 1000, 1500, 2000)
+noise_levels <- seq(0, 1, length.out = 20)
+
+# merge the simulation files
+files <- list.files(
+  here("experiments", "stringy_index", "results"),
+  pattern = "\\.csv$",
+  full.names = TRUE
+)
+
+all_results <- purrr::map_dfr(files, readr::read_csv, show_col_types = FALSE)
+
+glimpse(all_results)
+```
+
+## Summary of the results
+
+For each pattern, sample size and noise level, we calculate the average Stringy05 score and how much it varies across the 100 repetitions. We also calculate the percentage of scores equal to zero.
+
+```{r}
+#| label: summary
+summary_results <- all_results |>
+  group_by(pattern, n, noise_sd) |>
+  summarise(
+    mean_stringy = mean(stringy),
+    sd_stringy = sd(stringy),
+    median_stringy = median(stringy),
+    repetitions = n(),
+    .groups = "drop"
+  )
+
+summary_results |>
+  filter(n == visual_n) |>
+  print(n = 12)
+```
+
+# What do the original patterns look like?
+
+```{r}
+#| label: generate-patterns
+make_structure <- function(pattern, n, seed = 1111) {
+  set.seed(seed)
+
+  if (pattern == "two_moons") {
+    group <- sample(rep(1:2, length.out = n))
+    theta <- runif(n, 0, pi)
+    x <- ifelse(group == 1, cos(theta), 1 - cos(theta))
+    y <- ifelse(group == 1, sin(theta), 0.5 - sin(theta))
+  } else {
+    t <- rnorm(n, 0, 1)
+    x <- t
+
+    if (pattern == "cubic")   y <- poly(t, degree = 3)[, 3]
+    if (pattern == "quartic") y <- poly(t, degree = 4)[, 4]
+    if (pattern == "sine")    y <- sin(pi * t)
+  }
+
+  tibble(
+    x = as.numeric(scale(x)),
+    y = as.numeric(scale(y))
+  )
+}
+
+original_patterns <- purrr::map_dfr(patterns, function(p) {
+  make_structure(p, visual_n, base_seed) |>
+    mutate(pattern = p)
+})
+```
+
+```{r}
+#| label: fig-original
+#| fig-cap: "Original noise-free patterns at n = 500. Each coordinate has been standardised."
+#| fig-width: 10
+#| fig-height: 7
+
+ggplot(original_patterns, aes(x, y)) +
+  geom_point(size = 0.6, alpha = 0.7, colour = "#2679A8") +
+  facet_wrap(~ pattern, ncol = 2) +
+  coord_fixed() +
+  labs(x = "Standardised X", y = "Standardised Y") +
+  theme(aspect.ratio = 1) 
+```
+
+These patterns do not necessarily have the same noise-free Stringy05 score. Stringy05 captures one aspect of geometry; a visible pattern is not automatically highly Stringy.
+
+```{r}
+#| label: baseline-table
+#| tbl-cap: "Noise-free Stringy05 scores across patterns and sample sizes"
+
+baseline_scores <- summary_results |>
+  filter(noise_sd == 0) |>
+  select(pattern, n, baseline_stringy = mean_stringy)
+
+knitr::kable(baseline_scores, digits = 3)
+```
+
+# How does each pattern change as noise increases?
+
+We first focus on sample size **500**, since this is the intended size of the final benchmark datasets. We show six noise levels spanning the experiment, including no noise and SD = 1.
+
+At each level, we select the repetition whose Stringy05 score is closest to the **median score** across repetitions. We then recreate its X/Y coordinates using its saved seed. The label reports the **mean Stringy05 over all 100 repetitions**, not the score of the pictured repetition.
+
+```{r}
+#| label: reconstruct-noisy-patterns
+
+# Choose six positions from the 20-level noise grid
+display_sd <- noise_levels[c(1, 2, 4, 7, 12, 20)]
+
+selected_runs <- all_results |>
+  filter(n == visual_n) |>
+  filter(round(noise_sd * 19) %in% round(display_sd * 19)) |>
+  group_by(pattern, noise_sd) |>
+  mutate(distance = abs(stringy - median(stringy))) |>
+  slice_min(distance, n = 1, with_ties = FALSE) |>
+  ungroup() |>
+  left_join(
+    summary_results |>
+      filter(n == visual_n) |>
+      select(pattern, noise_sd, mean_stringy),
+    by = c("pattern", "noise_sd")
+  )
+
+# Recreate only the small number of datasets needed for the figure
+plot_data <- purrr::pmap_dfr(
+  selected_runs,
+  function(pattern, n, noise_sd, repetition, seed, stringy,
+           distance, mean_stringy, ...) {
+    original <- make_structure(pattern, n, base_seed)
+    set.seed(seed)
+    noise_x <- rnorm(n, 0, noise_sd)
+    noise_y <- rnorm(n, 0, noise_sd)
+
+    tibble(
+      pattern = pattern,
+      noise_sd = noise_sd,
+      mean_stringy = mean_stringy,
+      x = original$x + noise_x,
+      y = original$y + noise_y
+    )
+  }
+)
+
+# Data for printing mean values in the panels
+panel_means <- plot_data |>
+  distinct(pattern, noise_sd, mean_stringy)
+```
+
+
+
+```{r}
+#| label: fig-noise-patterns
+#| fig-cap: "Selected noise levels for four patterns at n = 500. Each panel shows one representative realisation; the printed Stringy05 is the mean across repetitions."
+#| fig-width: 16
+#| fig-height: 10
+
+# Use the same plot boundaries for every scatterplot
+x_min <- min(plot_data$x)
+y_max <- max(plot_data$y) + 0.8
+
+plot_data <- plot_data |>
+  mutate(noise_label = factor(
+    sprintf("SD = %.3f", noise_sd),
+    levels = sprintf("SD = %.3f", display_sd)
+  ))
+
+panel_means <- panel_means |>
+  mutate(noise_label = factor(
+    sprintf("SD = %.3f", noise_sd),
+    levels = sprintf("SD = %.3f", display_sd)
+  ))
+
+ggplot(plot_data, aes(x, y)) +
+  geom_point(size = 0.45, alpha = 0.65, colour = "#2679A8") +
+  geom_text(
+    data = panel_means,
+    aes(x = x_min, y = y_max,
+        label = sprintf("Mean = %.3f", mean_stringy)),
+    inherit.aes = FALSE,
+    hjust = 0, size = 3
+  ) +
+  facet_grid(pattern ~ noise_label) +
+  coord_fixed(
+    xlim = range(plot_data$x) + c(-0.3, 0.3),
+    ylim = c(min(plot_data$y) - 0.3, y_max + 0.3)
+  ) +
+  labs(x = "Noisy X", y = "Noisy Y") +
+  theme(aspect.ratio = 1)
+```
+
+
+
+These plots show how the point clouds change as noise grows. Importantly, a pattern may remain visually recognisable even if Stringy05 becomes small or reaches zero.
+
+# How does Stringy05 change with noise?
+
+## Mean Stringy05 for the four patterns at n = 500
+
+The following figure shows the average index score at each noise level. A faster decline indicates that the *measured Stringy property* is more sensitive to noise under that pattern and sample size.
+
+
+
+```{r}
+#| label: fig-pattern-comparison
+#| fig-cap: "Mean rescaled Stringy05 versus Gaussian noise SD for four patterns at n = 500."
+
+ggplot() +
+  # Individual Stringy05 scores from every simulation
+  geom_point(
+    data = all_results |> filter(n == visual_n),
+    aes(x = noise_sd, y = stringy),
+    colour = "steelblue",
+    alpha = 0.3,
+    size = 0.7
+  ) +
+  # Mean Stringy05 at each noise level
+  geom_line(
+    data = summary_results |> filter(n == visual_n),
+    aes(x = noise_sd, y = mean_stringy),
+    colour = "darkgreen",
+    linewidth = 1.2
+  ) +
+  facet_wrap(~ pattern, ncol = 2) +
+  coord_cartesian(ylim = c(0, 1)) +
+  labs(
+    x = "Gaussian noise SD",
+    y = "Rescaled Stringy05"
+  ) +
+  theme(aspect.ratio = 1)
+```
+
+
+
+## Variation across repetitions
+
+Mean scores do not tell us how consistent the index is. Boxplots show the spread of the 100 Stringy05 values for each noise level.
+
+```{r}
+#| label: fig-score-boxplots
+#| fig-cap: "Stringy05 distributions across repetitions for each pattern at n = 500."
+#| fig-width: 13
+#| fig-height: 8
+
+all_results |>
+  filter(n == visual_n) |>
+  ggplot(aes(x = factor(round(noise_sd, 3)), y = stringy)) +
+  geom_boxplot(fill = "#8abfdb", outlier.alpha = 0.4) +
+  facet_wrap(~ pattern, ncol = 2) +
+  labs(x = "Noise SD", y = "Rescaled Stringy05") +
+  theme(aspect.ratio = 1, 
+        axis.text.x = element_text(angle = 55, hjust = 1))
+```
+
+
+
+# Does sample size change the response to noise?
+
+We also simulated eight sample sizes. The next figures show whether smaller and larger samples produce different Stringy05 responses under the same noise levels.
+
+## Noise-response curves for every sample size
+
+```{r}
+#| label: fig-sample-size-curves
+#| fig-cap: "Mean Stringy05 against noise SD for each pattern, separated by sample size."
+#| fig-width: 14
+#| fig-height: 9
+
+summary_results |>
+  ggplot(aes(noise_sd, mean_stringy, colour = pattern)) +
+  geom_line(linewidth = 0.9) +
+  facet_wrap(~ n, ncol = 4) +
+  coord_cartesian(ylim = c(0, 1)) +
+  labs(x = "Noise SD", y = "Mean Stringy05", colour = "Pattern") +
+  theme(aspect.ratio = 1)
+
+
+```
+### Noise sensitivity and variability across sample sizes
+
+To investigate how the rescaled Stringy05 index responds to increasing Gaussian noise, we compare its distribution across all four geometric patterns and eight sample sizes. Each panel shows the individual Stringy05 scores from 100 repetitions at each noise level, together with the mean score (solid line) and the 95% empirical interval (shaded region). This allows us to examine not only how the average Stringy05 changes as noise increases, but also how its variability depends on the underlying pattern and sample size.
+
+
+```{r}
+#| label: fig-stringy-noise-distribution
+#| fig-cap: "Noise sensitivity of Stringy05 across patterns and sample sizes. Points show individual repetitions, lines show means, and shaded bands show the 95% empirical range."
+#| fig-width: 18
+#| fig-height: 12
+
+# Calculate the distribution of scores
+plot_summary <- all_results |>
+  group_by(pattern, n, noise_sd) |>
+  summarise(
+    mean_stringy = mean(stringy),
+    lower = quantile(stringy, 0.025),
+    upper = quantile(stringy, 0.975),
+    .groups = "drop"
+  )
+
+ggplot() +
+  # 95% range of observed scores
+  geom_ribbon(
+    data = plot_summary,
+    aes(
+      x = noise_sd,
+      ymin = lower,
+      ymax = upper,
+      fill = pattern,
+      group = pattern
+    ),
+    alpha = 0.15
+  ) +
+
+  # All 100 repetitions
+  geom_point(
+    data = all_results,
+    aes(noise_sd, stringy, colour = pattern),
+    alpha = 0.12,
+    size = 0.35,
+    position = position_jitter(width = 0.004, height = 0)
+  ) +
+  # Mean Stringy05
+  geom_line(
+    data = plot_summary,
+    aes(noise_sd, mean_stringy, colour = pattern),
+    linewidth = 0.9
+  ) +
+
+  facet_grid(pattern ~ n) +
+  coord_cartesian(ylim = c(0, 1)) +
+  labs(
+    x = "Gaussian noise SD",
+    y = "Rescaled Stringy05",
+    colour = "Pattern",
+    fill = "Pattern"
+  )  +
+  theme(aspect.ratio = 1,
+    strip.text = element_text(face = "bold"),
+    legend.position = "none"
+  )
+```
+
+
+## Heatmap of pattern, sample size and noise
+
+Each square shows the mean Stringy05 score for a sample size and noise level. This makes it easier to see whether changes are gradual or occur within a narrow range of noise SDs.
+
+```{r}
+#| label: fig-heatmap
+#| fig-cap: "Mean rescaled Stringy05 by noise SD and sample size, for each geometric pattern."
+#| fig-width: 14
+#| fig-height: 8
+
+
+summary_results |>
+  ggplot(aes(
+    x = factor(round(noise_sd, 3)),
+    y = factor(n),
+    fill = mean_stringy
+  )) +
+  geom_tile() +
+  facet_wrap(~ pattern, ncol = 2) +
+  scale_fill_viridis_c() +
+  labs(
+    x = "Gaussian noise SD",
+    y = "Sample size",
+    fill = "Mean Stringy05"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 55, hjust = 1))
+
+
+```
+
+### Interpretation of results
+
+The simulation results show that the rescaled Stringy05 index is sensitive to increasing Gaussian noise, although the rate of decline differs across geometric patterns and sample sizes. Cubic and quartic patterns generally retain higher Stringy05 scores over a wider range of noise levels, while sine and two-moons patterns show a more rapid decrease. This suggests that the response of Stringy05 to noise depends on the underlying geometric structure.
+
+Sample size also influences the behaviour of the index. In general, larger samples retain higher Stringy05 scores under the same noise conditions, particularly for cubic and quartic patterns. However, this relationship is not uniform across all patterns and noise levels. The distributions across repetitions further show that noise introduces variability in the index, with scores approaching zero as the noise level increases.
+
+The heatmaps support these observations by showing how Stringy05 changes jointly with sample size and noise. In particular, they reveal that the transition from high to low Stringy05 scores occurs at different noise levels depending on the pattern. Therefore, the same amount of Gaussian noise does not necessarily produce the same reduction in Stringy05 across different geometric structures.
+
+### Conclusion
+
+This study investigated the sensitivity of the rescaled Stringy05 index to Gaussian noise across four geometric patterns and eight sample sizes. The results indicate that Stringy05 generally decreases as noise increases, but its robustness varies considerably across patterns. Cubic and quartic structures retain higher index values under moderate noise, whereas sine and two-moons structures are more sensitive to perturbation. Larger sample sizes generally improve the persistence of the index, although the effect is pattern-dependent.
+
+These findings highlight the importance of considering both geometric structure and sample size when evaluating the noise sensitivity of Stringy05. For future projection pursuit experiments, noise levels should be selected separately for each pattern rather than applying a single noise threshold to all structures.
+
+The next stage will focus on selecting suitable noise levels for synthetic datasets with 500 observations, using the observed Stringy05 responses to construct examples with different levels of difficulty.
+
+

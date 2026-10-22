@@ -1,0 +1,214 @@
+---
+title: "Regularization Plan for Scagnostic Projection Pursuit"
+format: html
+---
+
+
+
+The aim is to make scagnostic projection pursuit more stable in higher dimensions by encouraging the optimizer to use a smaller set of relevant variables.
+
+For a data matrix
+
+$$
+X \in \mathbb{R}^{n \times p},
+$$
+
+a two-dimensional projection is obtained using a basis matrix
+
+$$
+A \in \mathbb{R}^{p \times 2}.
+$$
+
+The projected data are
+
+$$
+Y = XA.
+$$
+
+The scagnostic, for example `stringy05`, is then calculated on the projected data.
+
+## Decision variable
+
+The decision variable in the optimization is the projection basis
+
+$$
+A.
+$$
+
+The data matrix $X$ is fixed. Jellyfish searches over possible projection bases and tries to find the basis that gives the most interesting 2D projection.
+
+Without regularization, the objective is
+
+$$
+\hat A
+=
+\arg\max_A I(XA),
+$$
+
+where $I(\cdot)$ is the projection pursuit index, such as stringy.
+
+## Constraint on the basis
+
+A valid 2D projection basis is orthonormal, so
+
+$$
+A^T A = I_2.
+$$
+
+This means the two columns of $A$ are orthogonal unit vectors.
+
+Each row of $A$ corresponds to one original variable:
+
+$$
+A =
+\begin{pmatrix}
+a_{11} & a_{12}\\
+a_{21} & a_{22}\\
+\vdots & \vdots\\
+a_{p1} & a_{p2}
+\end{pmatrix}.
+$$
+
+If row $j$ is close to zero, then variable $j$ contributes very little to the projection.
+
+## Regularized objective
+
+The regularized projection pursuit objective will be
+
+$$
+\hat A_\lambda
+=
+\arg\max_A
+\left[
+I(XA) - \lambda P(A)
+\right].
+$$
+
+Here,
+
+- $I(XA)$ measures how interesting the projection is,
+- $P(A)$ penalizes complicated or non-sparse projection bases,
+- $\lambda$ controls the strength of regularization.
+
+When $\lambda = 0$, this reduces to ordinary projection pursuit.
+
+## Why ordinary Ridge is not useful
+
+A Ridge-style penalty would be
+
+$$
+P(A)
+=
+\sum_{j=1}^{p}\sum_{k=1}^{2} a_{jk}^2
+=
+\|A\|_F^2.
+$$
+
+However, because the projection basis must satisfy
+
+$$
+A^T A = I_2,
+$$
+
+we always have
+
+$$
+\|A\|_F^2
+=
+\mathrm{tr}(A^T A)
+=
+2.
+$$
+
+Therefore every valid 2D basis receives exactly the same Ridge penalty:
+
+$$
+I(XA) - \lambda \|A\|_F^2
+=
+I(XA) - 2\lambda.
+$$
+
+This only subtracts a constant from the objective and does not change which basis is optimal.
+
+So ordinary L2/Ridge regularization is not useful for this problem.
+
+## Row-wise sparsity
+
+The aim is not to shrink individual entries independently, but to reduce the number of original variables contributing to the projection.
+
+For variable $j$, define the row norm
+
+$$
+r_j
+=
+\sqrt{a_{j1}^2 + a_{j2}^2}.
+$$
+
+This measures how strongly variable $j$ contributes to the 2D projection.
+
+A natural row-wise sparsity penalty is
+
+$$
+P(A)
+=
+\sum_{j=1}^{p}
+\sqrt{a_{j1}^2 + a_{j2}^2}.
+$$
+
+This is similar to a group-Lasso penalty, where the two coefficients belonging to the same original variable are treated as one group.
+
+The resulting objective is
+
+$$
+\hat A_\lambda
+=
+\arg\max_A
+\left[
+I(XA)
+-
+\lambda
+\sum_{j=1}^{p}
+\sqrt{a_{j1}^2 + a_{j2}^2}
+\right].
+$$
+
+This encourages some rows of $A$ to become zero or close to zero, reducing the number of variables entering the projection.
+
+## Why row-wise sparsity is suitable
+
+The goal is to find a high-scagnostic projection while avoiding unnecessary dimensions.
+
+For example, if the true hidden structure is distributed across four variables, the optimizer should ideally keep those four variables and suppress unrelated noise variables.
+
+The penalty should therefore encourage
+
+$$
+\text{high scagnostic value}
+$$
+
+while also encouraging
+
+$$
+\text{a small number of active rows in } A.
+$$
+
+## Planned workflow
+
+1. Use `stringy05` as the projection pursuit index.
+2. Let Jellyfish optimize the basis $A$.
+3. Replace the ordinary objective $I(XA)$ with the penalized objective
+
+$$
+I(XA) - \lambda P(A).
+$$
+
+4. Start with the row-wise group-sparsity penalty.
+5. Test a sequence of $\lambda$ values, including $\lambda = 0$ as the unregularized baseline.
+6. Compare:
+   - final unpenalized stringy value,
+   - number of active variables,
+   - recovery of known signal variables,
+   - recovery of the true projection/subspace,
+   - Jellyfish success rate across repeated runs.
+
+The main question is whether regularizing the projection basis helps Jellyfish find the correct structured projection more reliably as the ambient dimension increases.
