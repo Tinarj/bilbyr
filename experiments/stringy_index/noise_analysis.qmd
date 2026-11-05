@@ -477,15 +477,6 @@ summary_results |>
 
 ```
 
-### Interpretation of results
-
-The simulation results show that the rescaled Stringy05 index is sensitive to increasing Gaussian noise, although the rate of decline differs across geometric patterns and sample sizes. Cubic and quartic patterns generally retain higher Stringy05 scores over a wider range of noise levels, while sine and two-moons patterns show a more rapid decrease. This suggests that the response of Stringy05 to noise depends on the underlying geometric structure.
-
-Sample size also influences the behaviour of the index. In general, larger samples retain higher Stringy05 scores under the same noise conditions, particularly for cubic and quartic patterns. However, this relationship is not uniform across all patterns and noise levels. The distributions across repetitions further show that noise introduces variability in the index, with scores approaching zero as the noise level increases.
-
-The heatmaps support these observations by showing how Stringy05 changes jointly with sample size and noise. In particular, they reveal that the transition from high to low Stringy05 scores occurs at different noise levels depending on the pattern. Therefore, the same amount of Gaussian noise does not necessarily produce the same reduction in Stringy05 across different geometric structures.
-
-### Conclusion
 
 This study investigated the sensitivity of the rescaled Stringy05 index to Gaussian noise across four geometric patterns and eight sample sizes. The results indicate that Stringy05 generally decreases as noise increases, but its robustness varies considerably across patterns. Cubic and quartic structures retain higher index values under moderate noise, whereas sine and two-moons structures are more sensitive to perturbation. Larger sample sizes generally improve the persistence of the index, although the effect is pattern-dependent.
 
@@ -493,4 +484,14 @@ These findings highlight the importance of considering both geometric structure 
 
 The next stage will focus on selecting suitable noise levels for synthetic datasets with 500 observations, using the observed Stringy05 responses to construct examples with different levels of difficulty.
 
+## Interpretation of results
 
+The simulation results show that the rescaled Stringy05 index is sensitive to increasing Gaussian noise, although the rate of decline differs across geometric patterns and sample sizes. Cubic and quartic patterns generally retain higher Stringy05 scores over a wider range of noise levels, while sine and two-moons patterns show a more rapid decrease. This suggests that the noise sensitivity of Stringy05 depends on the underlying geometric structure.
+
+Sample size also influences the behaviour of the index. In general, larger samples retain higher Stringy05 scores under the same noise conditions, particularly for cubic and quartic patterns. However, this relationship is not consistent across all patterns and noise levels. The distributions across repetitions also show that noise introduces variability in the index, with scores generally approaching zero as noise increases.
+
+The heatmaps further illustrate how Stringy05 changes jointly with sample size and noise level. They show that the transition from high to low Stringy05 scores occurs at different noise levels depending on the pattern. Therefore, the same amount of Gaussian noise does not necessarily produce the same reduction in Stringy05 across different geometric structures.
+
+Overall, these findings highlight the importance of considering both geometric structure and sample size when evaluating Stringy05. Based on the visualisations and observed index responses, noise standard deviations between 0 and 0.3 appear to provide a useful initial range for investigating structural degradation, although the appropriate noise level varies across patterns.
+
+These results will inform the next stage of this research, which focuses on generating synthetic high-dimensional datasets with hidden geometric structures for evaluating projection pursuit methods. The aim is to investigate whether projection pursuit can recover meaningful structures when they are mixed with nuisance variables. The dataset-generation procedure and its evaluation will be discussed separately.

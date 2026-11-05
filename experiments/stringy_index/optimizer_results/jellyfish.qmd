@@ -1,0 +1,373 @@
+---
+title: "Can Jellyfish recover the hidden cubic structure?"
+format:
+  html:
+    toc: true
+    number-sections: true
+    code-fold: true
+  pdf:
+    toc: true
+    number-sections: true
+    geometry:
+      - margin=1in
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+## Aim of the experiment
+
+This experiment investigates whether the **Jellyfish Search Optimiser** can recover a hidden cubic structure from a ten-variable synthetic dataset and whether scagnostic preprocessing improves its performance.
+
+First, we identify the **true generating projection** and run Jellyfish on all ten variables without preprocessing. Next, we use pairwise Stringy05 scores to select promising variables and run Jellyfish again on the reduced dataset.
+
+Finally, we compare both approaches in terms of **Stringy05 score, recovery of the true projection, computational time, and optimisation efficiency**. 
+
+## Generate the dataset
+
+We use the default arguments of `gen_hidden_stringy()`: 500 observations, 10 variables, a cubic pattern, rotation angle 5 degrees and seed 918.
+
+
+
+## Setup and generate one dataset
+
+```{r}
+#| label: setup
+library(tidyverse)
+library(tourr)
+library(bilbyr)
+
+source("../../../data-raw/hidden_stringy.R")
+
+n <- 500
+p <- 10
+pattern <- "cubic"
+degrees <- 5
+theta <- degrees * pi / 180
+seed <- 918
+
+set.seed(seed)
+X <- gen_hidden_stringy(
+  n = n,
+  p = p,
+  pattern = pattern,
+  theta = theta,
+  seed = seed
+) |> as.matrix()
+
+stopifnot(ncol(X) == 10L, all(is.finite(X)))
+colnames(X) <- paste0("x", seq_len(p))
+```
+
+```{r}
+#| label: true-basis
+
+# True projection matrix (inverse rotation)
+A_true <- matrix(
+  0,
+  nrow = ncol(X),
+  ncol = 2,
+  dimnames = list(colnames(X), c("axis1", "axis2"))
+)
+
+A_true["x1", 1] <-  cos(theta)
+A_true["x3", 1] <- -sin(theta)
+A_true["x2", 2] <-  cos(theta)
+A_true["x4", 2] <- -sin(theta)
+
+A_true
+
+# Function to calculate rescaled Stringy05
+stringy_index <- function(z) {
+  as.numeric(
+    cassowaryr::sc_stringy05(
+      z[, 1],
+      z[, 2],
+      rescale = TRUE
+    )
+  )
+}
+
+# 1. Mixed structure (observed x1–x2)
+Z_mixed <- as.matrix(X[, c("x1", "x2")])
+
+mixed_score <- stringy_index(Z_mixed)
+
+# 2. Original structure (recovered through inverse rotation)
+Z_true <- X %*% A_true
+
+oracle_score <- stringy_index(Z_true)
+
+# Print comparison
+cat("Rotation angle:", theta * 180 / pi, "degrees\n")
+cat("Stringy05 of mixed x1–x2:", mixed_score, "\n")
+cat("Stringy05 of recovered original cubic:", oracle_score, "\n")
+```
+
+
+
+```{r}
+#| label: fig-true-projection
+#| fig-cap: "The known generating projection recovers the embedded noise-free cubic structure (up to a common magnitude)."
+#| fig-width: 7
+#| fig-height: 5
+
+tibble(axis1 = Z_true[, 1], axis2 = Z_true[, 2]) |>
+  ggplot(aes(axis1, axis2)) +
+  geom_point(colour = "#2679A8", alpha = 0.7, size = 0.8) +
+  labs(title = paste0("Known generating projection — Stringy05 = ",
+                      round(oracle_score, 3)),
+       x = "True projection axis 1", y = "True projection axis 2") + 
+  theme(aspect.ratio = 1)
+```
+
+
+# Run Jellyfish without preprocessing
+
+```{r, include=FALSE}
+##| label: run-jellyfish
+#| include: false
+
+library(tourr)
+library(tidyverse)
+library(cassowaryr)
+
+# Stringy05 projection pursuit index
+stringy_pp <- function(data) {
+  as.numeric(
+    cassowaryr::sc_stringy05(
+      data[, 1],
+      data[, 2],
+      rescale = TRUE
+    )
+  )
+}
+
+# Run Jellyfish using all 10 variables
+set.seed(1111)
+
+res <- animate_xy(
+  X,
+  guided_tour(
+    index_f = stringy_pp,
+    d = 2,
+    search_f = search_jellyfish,
+    n_jellies = 30
+  ),
+  max_frames = 100
+)
+
+# Extract all recorded bases from the first loop
+bases_all <- res |>
+  filter(info == "current_best") |>
+  pull(basis)
+
+# Calculate Stringy05 for every recorded basis
+basis_scores <- tibble(
+  id = seq_along(bases_all),
+  stringy = purrr::map_dbl(
+    bases_all,
+    \(A) stringy_pp(X %*% A)
+  )
+)
+
+# Find the highest-scoring recorded projection
+best_id <- which.max(basis_scores$stringy)
+
+A_best <- bases_all[[best_id]]
+
+best_score <- basis_scores$stringy[best_id]
+
+# Print comparison with earlier scores
+cat("Mixed x1-x2 Stringy05:", mixed_score, "\n")
+cat("Original cubic Stringy05:", oracle_score, "\n")
+cat("Best Jellyfish Stringy05:", best_score, "\n")
+
+# Remove near-duplicate bases for a smoother GIF
+bases_gif <- tourr::check_dup(bases_all, 0.1)
+
+# Save the recorded bases and scores
+saveRDS(
+  list(
+    bases = bases_all,
+    scores = basis_scores,
+    best_basis = A_best,
+    best_score = best_score
+  ),
+  "jellyfish_cubic_5deg_results.rds"
+)
+
+# Render GIF from the recorded Jellyfish bases
+gif_file <- "jellyfish_cubic_5deg.gif"
+
+tourr::render_gif(
+  data = X,
+  tour_path = planned_tour(bases_gif),
+  display = display_xy(),
+  gif_file = gif_file,
+  frames = 100,
+  apf = 1 / 12
+)
+```
+
+```{r}
+#| label: fig-jellyfish-gif
+#| echo: false
+#| warning: false
+#| message: false
+#| fig-cap: "Jellyfish guided tour of the 10-dimensional hidden cubic dataset at 5°."
+#| out-width: "80%"
+
+knitr::include_graphics(gif_file)
+```
+
+
+```{r}
+#| label: fig-best-jellyfish
+#| fig-cap: "Highest-scoring recorded Jellyfish projection."
+#| fig-width: 7
+#| fig-height: 5
+
+best_projection <- X %*% A_best
+
+plot_data <- tibble(
+  x = best_projection[, 1],
+  y = best_projection[, 2]
+)
+
+ggplot(plot_data, aes(x, y)) +
+  geom_point(
+    colour = "#2679A8",
+    alpha = 0.7,
+    size = 0.7
+  ) +
+  coord_fixed() +
+  labs(
+    title = "Best Jellyfish projection",
+    subtitle = paste(
+      "Stringy05 =",
+      round(best_score, 4)
+    ),
+    x = "Projection 1",
+    y = "Projection 2"
+  ) +
+  theme_bw()
+```
+
+```{r}
+#| label: tbl-jellyfish-comparison
+#| tbl-cap: "Stringy05 comparison of the mixed structure, original cubic structure, and best recorded Jellyfish projection."
+
+tibble(
+  projection = c(
+    "Mixed x1-x2 (5°)",
+    "Original cubic (oracle)",
+    "Best Jellyfish projection"
+  ),
+  stringy05 = c(
+    mixed_score,
+    oracle_score,
+    best_score
+  )
+) |>
+  knitr::kable(digits = 4)
+```
+
+Now, let's use preprocessing.
+
+```{r}
+#| label: select-x1-x4
+
+selected_vars <- c("x1", "x2", "x3", "x4")
+X_selected <- X[, selected_vars, drop = FALSE]
+
+cat("Selected variables:", selected_vars, "\n")
+cat("Number of selected variables:", ncol(X_selected), "\n")
+```
+
+
+```{r}
+#| label: run-jellyfish-x1-x4
+#| include: false
+
+set.seed(1111)
+
+res_selected <- animate_xy(
+  X_selected,
+  guided_tour(
+    index_f = stringy_pp,
+    d = 2,
+    search_f = search_jellyfish,
+    n_jellies = 30
+  ),
+  max_frames = 100
+)
+
+
+bases_selected <- res_selected |>
+  filter(info == "current_best") |>
+  pull(basis)
+
+scores_selected <- purrr::map_dbl(
+  bases_selected,
+  \(A) stringy_pp(X_selected %*% A)
+)
+
+best_id_selected <- which.max(scores_selected)
+
+A_best_selected <- bases_selected[[best_id_selected]]
+best_score_selected <- scores_selected[best_id_selected]
+
+cat("Best Jellyfish Stringy05:", best_score_selected, "\n")
+
+bases_gif_selected <- check_dup(bases_selected, 0.1)
+
+
+gif_selected <- "jellyfish_x1_x4_5deg.gif"
+
+render_gif(
+  data = X_selected,
+  tour_path = planned_tour(bases_gif_selected),
+  display = display_xy(),
+  gif_file = gif_selected,
+  frames = 100,
+  apf = 1 / 12
+)
+```
+```{r}
+#| label: fig-jellyfish-x1-x4
+#| echo: false
+#| fig-cap: "Jellyfish optimisation using four selected variables."
+#| out-width: "80%"
+
+knitr::include_graphics(gif_selected)
+```
+
+```{r}
+#| label: fig-best-jellyfish-x1-x4
+
+Z_best_selected <- X_selected %*% A_best_selected
+
+ggplot(
+  tibble(
+    x = Z_best_selected[, 1],
+    y = Z_best_selected[, 2]
+  ),
+  aes(x, y)
+) +
+  geom_point(
+    colour = "#2679A8",
+    alpha = 0.7,
+    size = 0.7
+  ) +
+  coord_fixed() +
+  labs(
+    title = "Best Jellyfish projection (4D)",
+    subtitle = paste(
+      "Stringy05 =", round(best_score_selected, 4)
+    )
+  ) +
+  theme_bw()
+```
+
