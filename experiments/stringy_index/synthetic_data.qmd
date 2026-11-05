@@ -6,17 +6,18 @@ format:
     toc: true
     number-sections: true
     code-fold: true
+    embed-resources: true
 execute:
   echo: true
   warning: false
   message: false
 ---
 
-## Generating synthetic datasets for projection pursuit
+## Aim and motivation
 
-The preceding noise-sensitivity experiment added Gaussian measurement noise directly to a two-dimensional pattern. This experiment does not add measurement noise to the structure. Instead, it embeds a clean nonlinear structure into a higher-dimensional dataset by rotating each signal coordinate with an independent Gaussian nuisance coordinate. We study whether the original pattern remains visible in the *observed coordinate pairs* as the rotation angle changes, how their Stringy05 values change, and whether the known inverse rotation recovers the initial pattern and its index value.
+ This experiment embeds a clean nonlinear structure into a higher-dimensional dataset by rotating each signal coordinate with an independent Gaussian nuisance coordinate. We study whether the original pattern remains visible in the *observed coordinate pairs* as the rotation angle changes, how their Stringy05 values change, and whether the known inverse rotation recovers the initial pattern and its index value.
 
-Four patterns are considered: **cubic, quartic, sine, and two moons**. Each dataset has `n = 500` observations and `p = 10` variables: four potentially signal-bearing mixed coordinates and six additional independent Gaussian nuisance variables. We investigate $\theta=0,\pi/12,\pi/6,\pi/4$, corresponding to **0°, 15°, 30°, and 45°**. The same random seed is used within each pattern, so changing the angle does not change the underlying structure or nuisance draws.
+Four patterns are considered: **cubic, quartic, sine, and two moons**. Each dataset has `n = 500` observations and `p = 10` variables: four potentially signal-bearing mixed coordinates and six additional independent Gaussian nuisance variables. The initial static comparison uses **0°, 15°, 30°, and 45°**; a separate fine-angle comparison and later interactive slider expand this range. The same random seed is used within each pattern, so changing the angle does not change the underlying structure or nuisance draws.
 
 
 ## Data generator and experimental settings
@@ -32,7 +33,7 @@ $$
 \qquad j=1,2.
 $$
 
-Consequently, the two signal coordinates have sample SD exactly 1. Generate independent nuisance coordinates $n_1,n_2\sim N(0,1)$, which have SD 1.
+Consequently, the two signal coordinates have sample SD exactly 1. Generate independent nuisance coordinates $n_1,n_2\sim N(0,1)$, which have population SD 1 (their realized sample SDs are approximately 1).
 
 The signal and nuisance coordinates are mixed by an orthogonal rotation:
 
@@ -45,93 +46,68 @@ x_4 &= -\sin(\theta)s_2+\cos(\theta)n_2.
 \end{aligned}
 $$
 
+For each signal–nuisance pair, the transformation matrix is
+
+$$
+R(\theta)=\begin{bmatrix}\cos\theta & \sin\theta\\-\sin\theta & \cos\theta\end{bmatrix}.
+$$
+
+It is **orthogonal** because $R(\theta)^\top R(\theta)=I$: its columns have unit length and are perpendicular ($\cos^2\theta+\sin^2\theta=1$). Hence its inverse is its transpose, and the original signal can be recovered from all four mixed variables.
+
 Six additional nuisance variables $x_5,\ldots,x_{10}\sim N(0,1)$ are generated independently. With independent signal and nuisance coordinates, the rotated variables have approximately unit sample variance.
 
 ### Reproducible setup
 
+The QMD uses the exported generator from the `*bilbyr`.
+
 ```{r}
 #| label: setup
+library(bilbyr)
 library(tidyverse)
 library(cassowaryr)
-
-gen_hidden_stringy_components <- function(
-    n = 500, p = 10, pattern = "cubic",
-    theta = pi / 4, seed = 918
-) {
-  pattern <- match.arg(pattern, c("cubic", "quartic", "sine", "two_moons"))
-  stopifnot(n >= 5, p >= 4)
-  set.seed(seed)
-
-  if (pattern == "two_moons") {
-    group <- sample(rep(1:2, length.out = n))
-    angle <- runif(n, 0, pi)
-    s1 <- ifelse(group == 1, cos(angle), 1 - cos(angle))
-    s2 <- ifelse(group == 1, sin(angle), 0.5 - sin(angle))
-  } else {
-    t <- rnorm(n)
-    s1 <- t
-    s2 <- switch(
-      pattern,
-      cubic = poly(t, degree = 3)[, 3],
-      quartic = poly(t, degree = 4)[, 4],
-      sine = sin(pi * t)
-    )
-  }
-
-
-  s1 <- as.numeric(scale(s1))
-  s2 <- as.numeric(scale(s2))
-
-  n1 <- rnorm(n, sd = 1)
-  n2 <- rnorm(n, sd = 1)
-
-  x1 <-  cos(theta) * s1 + sin(theta) * n1
-  x3 <- -sin(theta) * s1 + cos(theta) * n1
-  x2 <-  cos(theta) * s2 + sin(theta) * n2
-  x4 <- -sin(theta) * s2 + cos(theta) * n2
-
-  observed <- tibble(x1 = x1, x2 = x2, x3 = x3, x4 = x4)
-  if (p > 4) {
-    extra_noise <- matrix(rnorm(n * (p - 4), sd = 1), nrow = n)
-    colnames(extra_noise) <- paste0("x", 5:p)
-    observed <- bind_cols(observed, as_tibble(extra_noise))
-  }
-
-  list(
-    observed = observed,
-    original = tibble(s1 = s1, s2 = s2)
-  )
-}
-
-gen_hidden_stringy <- function(n = 500, p = 10, pattern = "cubic",
-                              theta = pi / 4, seed = 918) {
-  gen_hidden_stringy_components(n, p, pattern, theta, seed)$observed
-}
+library(plotly)
 
 n <- 500
 p <- 10
 seed <- 918
 patterns <- c("cubic", "quartic", "sine", "two_moons")
-angles <- tibble(
-  angle = c(0, pi / 12, pi / 6, pi / 4),
-  angle_label = factor(
-    c("0°", "15°", "30°", "45°"),
-    levels = c("0°", "15°", "30°", "45°")
+
+# One common generator for static and interactive plots.
+generate <- function(pattern, angle_deg) {
+  bilbyr::gen_hidden_stringy(
+    n = n, p = p, pattern = pattern,
+    theta = angle_deg * pi / 180, seed = seed
   )
+}
+
+stringy05 <- function(x, y) {
+  as.numeric(cassowaryr::sc_stringy05(x, y, rescale = TRUE))
+}
+
+recover_signal <- function(dat, angle_deg) {
+  th <- angle_deg * pi / 180
+  cbind(
+    s1 = cos(th) * dat$x1 - sin(th) * dat$x3,
+    s2 = cos(th) * dat$x2 - sin(th) * dat$x4
+  )
+}
+
+# Main static experiment: 0, 15, 30, 45 degrees.
+main_angles <- c(0, 15, 30, 45)
+angles <- tibble(
+  angle = main_angles * pi / 180,
+  angle_label = factor(paste0(main_angles, "°"), levels = paste0(main_angles, "°"))
 )
 
 experiments <- tidyr::crossing(
-  pattern = factor(patterns, levels = patterns),
-  angles
+  pattern = factor(patterns, levels = patterns), angles
 ) |>
-  mutate(result = purrr::map2(
-    as.character(pattern), angle,
-    ~ gen_hidden_stringy_components(
-      n = n, p = p, pattern = .x, theta = .y, seed = seed
-    )
-  ))
+  mutate(result = purrr::map2(as.character(pattern), angle, \(pat, th) {
+    angle_deg <- th * 180 / pi
+    x <- generate(pat, angle_deg)
+    list(observed = x, original = as_tibble(recover_signal(x, angle_deg)))
+  }))
 ```
-
 
 ## Original clean geometric structures
 
@@ -217,7 +193,7 @@ view_data <- experiments |>
 
 ### Plot original and mixed views
 
-Each figure shows one pattern, with rotation angles in rows and the original structure plus six mixed pairs in columns.
+Each figure shows one pattern, with rotation angles in rows and the original structure plus six mixed pairs in columns. **Note:** Each static facet uses its own axis scale (`scales = "free"`); use the interactive plots below for a fixed-scale visual comparison.
 
 ```{r}
 
@@ -229,7 +205,7 @@ Each figure shows one pattern, with rotation angles in rows and the original str
 
 for (pat in patterns) {
 
-  cat("\n\n### Pattern: ", pat, "\n\n", sep = "")
+  cat("\n\n Pattern: ", pat, "\n\n", sep = "")
 
   fig <- view_data |>
     filter(as.character(pattern) == pat) |>
@@ -248,7 +224,6 @@ for (pat in patterns) {
         "Structure visibility across rotation angles:",
         pat
       )) +
-    theme_bw() +
     theme(aspect.ratio = 1,
           axis.title = element_blank(),
       panel.spacing = unit(0.7, "lines")
@@ -331,17 +306,9 @@ experiments_small <- tidyr::crossing(
       theta,
       \(p, th) {
 
-        # Use the same generator as in the original experiment
-        x <- gen_hidden_stringy(
-          n = 500,
-          p = 10,
-          pattern = p,
-          theta = th,
-          seed = 918
-        )
+        x <- generate(p, th * 180 / pi)
 
-        # Recover the original standardized coordinates
-        # to construct the reference original view
+        
         original <- tibble(
           s1 = cos(th) * x$x1 - sin(th) * x$x3,
           s2 = cos(th) * x$x2 - sin(th) * x$x4
@@ -378,19 +345,15 @@ view_data_small <- experiments_small |>
 ```
 
 
+### Pattern: cubic
 
 ```{r}
-#| label: fig-small-angle-views
-#| fig-cap: "Original structure and six mixed coordinate pairs for rotation angles below 15 degrees."
+#| label: fig-small-angle-cubic
 #| fig-width: 17
 #| fig-height: 16
-#| results: asis
 
-for (pat in patterns) {
-
-  cat("\n\n### Pattern: ", pat, "\n\n", sep = "")
-
-  fig <- view_data_small |>
+plot_small_angles <- function(pat) {
+  view_data_small |>
     filter(as.character(pattern) == pat) |>
     ggplot(aes(u, v)) +
     geom_point(
@@ -398,16 +361,8 @@ for (pat in patterns) {
       alpha = 0.55,
       colour = "#2679A8"
     ) +
-    facet_grid(
-      angle_label ~ view,
-      scales = "free"
-    ) +
-    labs(
-      title = paste(
-        "Structure visibility at small rotation angles:",
-        pat
-      )
-    ) +
+    facet_grid(angle_label ~ view, scales = "free") +
+    labs(title = paste("Structure visibility at small rotation angles:", pat)) +
     theme_bw() +
     theme(
       aspect.ratio = 1,
@@ -415,9 +370,39 @@ for (pat in patterns) {
       strip.text.x = element_text(size = 8),
       panel.spacing = unit(0.7, "lines")
     )
-
-  print(fig)
 }
+
+plot_small_angles("cubic")
+```
+
+### Pattern: quartic
+
+```{r}
+#| label: fig-small-angle-quartic
+#| fig-width: 17
+#| fig-height: 16
+
+plot_small_angles("quartic")
+```
+
+### Pattern: sine
+
+```{r}
+#| label: fig-small-angle-sine
+#| fig-width: 17
+#| fig-height: 16
+
+plot_small_angles("sine")
+```
+
+### Pattern: two moons
+
+```{r}
+#| label: fig-small-angle-two-moons
+#| fig-width: 17
+#| fig-height: 16
+
+plot_small_angles("two_moons")
 ```
 
 
@@ -430,23 +415,6 @@ index_scores_small <- view_data_small |>
     value = score_stringy05(u, v),
     .groups = "drop"
   )
-
-stopifnot(all(is.finite(index_scores_small$value)))
-```
-
-## 4. Table of Stringy05 scores
-
-```{r}
-#| label: tbl-small-angle-index-values
-#| tbl-cap: "Rescaled Stringy05 for the original structures and mixed coordinate pairs at rotation angles below 15 degrees."
-
-index_scores_small |>
-  select(pattern, angle_label, view, value) |>
-  pivot_wider(
-    names_from = view,
-    values_from = value
-  ) |>
-  knitr::kable(digits = 4)
 ```
 
 
@@ -485,31 +453,181 @@ index_scores_small |>
 
 
 ```{r}
-#| label: tbl-best-small-angle-pairs
-#| tbl-cap: "Highest-scoring mixed variable pair at each rotation angle."
+#| label: interactive-angles
+#| include: false
+angles_deg <- seq(0, 90, by = 5)
+```
 
-best_pairs_small <- index_scores_small |>
-  filter(type == "Mixed pair") |>
-  group_by(pattern, angle) |>
-  slice_max(
-    order_by = value,
-    n = 1,
-    with_ties = FALSE
-  ) |>
-  ungroup()
+## Interactive comparison: original versus observed pair
 
-best_pairs_small |>
-  select(
-    pattern,
-    angle,
-    best_pair = view,
-    best_stringy05 = value
-  ) |>
-  knitr::kable(digits = 4)
+Each plot is interactive: use the **angle slider / Play button** to compare the clean reference on the left with the fixed observed pair `(x1, x2)` on the right. Stringy05 values are written inside the plot and update with the slider.
+
+```{r}
+#| label: interactive-plot-function
+
+make_rotation_plot <- function(pattern) {
+  datasets <- lapply(angles_deg, function(a) generate(pattern, a))
+  original <- as.matrix(datasets[[1]][, c("x1", "x2")])
+  original_score <- stringy05(original[, 1], original[, 2])
+
+
+  max_abs <- max(abs(unlist(c(
+    list(original),
+    lapply(datasets, function(dat) as.matrix(dat[, c("x1", "x2")]))
+  ))))
+  lim <- 1.1 * max_abs
+  offset <- 2.6 * lim
+  keys <- sprintf("%02d°", angles_deg)
+
+  points <- purrr::map2_dfr(datasets, seq_along(angles_deg), function(dat, j) {
+    frame <- keys[j]
+    dplyr::bind_rows(
+      tibble::tibble(
+        xx = original[, 1], yy = original[, 2],
+        panel = "Original", frame = frame
+      ),
+      tibble::tibble(
+        xx = dat$x1 + offset, yy = dat$x2,
+        panel = "Observed", frame = frame
+      )
+    )
+  })
+  points$frame <- factor(points$frame, levels = keys)
+
+  labels <- purrr::map2_dfr(datasets, seq_along(angles_deg), function(dat, j) {
+    tibble::tibble(
+      xx = c(0, offset),
+      yy = c(-1.23 * lim, -1.23 * lim),
+      label = c(
+        sprintf("Original Stringy05 = %.3f", original_score),
+        sprintf("Observed Stringy05 = %.3f", stringy05(dat$x1, dat$x2))
+      ),
+      frame = keys[j]
+    )
+  })
+  labels$frame <- factor(labels$frame, levels = keys)
+
+  fig <- plotly::plot_ly() |>
+    plotly::add_trace(
+      data = dplyr::filter(points, panel == "Original"),
+      x = ~xx, y = ~yy, frame = ~frame,
+      type = "scatter", mode = "markers",
+      marker = list(size = 4, color = "#0D9488", opacity = 0.8),
+      name = "Original signal", hoverinfo = "skip", inherit = FALSE
+    ) |>
+    plotly::add_trace(
+      data = dplyr::filter(points, panel == "Observed"),
+      x = ~xx, y = ~yy, frame = ~frame,
+      type = "scatter", mode = "markers",
+      marker = list(size = 4, color = "#2563EB", opacity = 0.8),
+      name = "Observed (x1, x2)", hoverinfo = "skip", inherit = FALSE
+    ) |>
+    plotly::add_trace(
+      data = labels, x = ~xx, y = ~yy, text = ~label, frame = ~frame,
+      type = "scatter", mode = "text", showlegend = FALSE,
+      textfont = list(size = 12, color = "#243047"),
+      hoverinfo = "skip", inherit = FALSE
+    ) |>
+    plotly::layout(
+      title = paste0("Pattern: ", pattern),
+      xaxis = list(
+        range = c(-1.22 * lim, offset + 1.22 * lim),
+        showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE,
+        title = "", fixedrange = TRUE
+      ),
+      yaxis = list(
+        range = c(-1.42 * lim, 1.25 * lim),
+        showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE,
+        title = "", fixedrange = TRUE,
+        scaleanchor = "x", scaleratio = 1
+      ),
+      annotations = list(
+        list(x = 0, y = 1.04, xref = "x", yref = "paper",
+             text = "Original (s1, s2)", showarrow = FALSE),
+        list(x = offset, y = 1.04, xref = "x", yref = "paper",
+             text = "Observed (x1, x2)", showarrow = FALSE)
+      ),
+      legend = list(orientation = "h", x = 0.1, y = 1.18),
+      margin = list(l = 25, r = 25, b = 90, t = 105)
+    ) |>
+    plotly::animation_opts(frame = 350, transition = 0, redraw = FALSE) |>
+    plotly::animation_slider(currentvalue = list(prefix = "Mixing angle θ = ")) |>
+    plotly::animation_button(x = 1, xanchor = "right", y = 0)
+
+  fig
+}
+```
+
+### Cubic
+
+```{r}
+#| label: interactive-cubic
+make_rotation_plot("cubic")
+```
+
+### Quartic
+
+```{r}
+#| label: interactive-quartic
+make_rotation_plot("quartic")
+```
+
+### Sine
+
+```{r}
+#| label: interactive-sine
+make_rotation_plot("sine")
+```
+
+### Two moons
+
+```{r}
+#| label: interactive-two-moons
+make_rotation_plot("two_moons")
 ```
 
 
+## Comparing observed and recovered Stringy05 across the full angle range
 
+The score of the observed pair `(x1, x2)` may change with the mixing angle, but the known recovery projection returns the clean pattern for each angle. The latter is a ground-truth reference, not a jellyfish optimization result.
 
+```{r}
+#| label: score-rotation
+scores <- purrr::map_dfr(patterns, \(pat) {
+  purrr::map_dfr(angles_deg, \(a) {
+    dat <- generate(pat, a)
+    recovered <- recover_signal(dat, a)
+    tibble(
+      pattern = pat,
+      angle_deg = a,
+      observed = stringy05(dat$x1, dat$x2),
+      ground_truth = stringy05(recovered[, 1], recovered[, 2])
+    )
+  })
+})
+```
+
+```{r}
+#| label: fig-recovery-trend
+#| fig-width: 10
+#| fig-height: 7
+scores |>
+  pivot_longer(c(observed, ground_truth), names_to = "view", values_to = "value") |>
+  ggplot(aes(angle_deg, value, colour = view)) +
+  geom_line(linewidth = 0.8) +
+  geom_point(size = 1.1) +
+  facet_wrap(~pattern, ncol = 2) +
+  scale_x_continuous(breaks = c(0, 15, 30, 45, 60, 75, 90)) +
+  labs(x = "Mixing angle (degrees)", y = "Rescaled Stringy05", colour = "Projection")
+```
+
+```{r}
+#| label: tbl-rotation-scores
+#| tbl-cap: "Observed and ground-truth Stringy05 at representative angles."
+scores |>
+  filter(angle_deg %in% c(0, 5, 15, 30, 45, 60, 90)) |>
+  select(pattern, angle_deg, observed, ground_truth) |>
+  knitr::kable(digits = 3)
+```
 
 
