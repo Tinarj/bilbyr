@@ -9,7 +9,7 @@ scag_preprocess(data, scag = "stringy05", rescale = FALSE, ...)
 \arguments{
 \item{data}{A data frame or numeric matrix.}
 
-\item{scag}{Scagnostic to calculate, e.g. "stringy05" or "skinny".}
+\item{scag}{Scagnostic to calculate, e.g. "stringy05".}
 
 \item{rescale}{Logical. Apply rescaling if supported. Defaults to FALSE.}
 
@@ -17,14 +17,17 @@ scag_preprocess(data, scag = "stringy05", rescale = FALSE, ...)
 }
 \value{
 An object of class \code{bilby_preprocess} containing:
-\itemize{
-\item \code{pair_scores}: variable pairs, scagnostic values, and ranks.
-\item \code{index}: the scagnostic used.
+\describe{
+\item{pair_scores}{All variable pairs, scores and ranks.}
+\item{top_pairs}{Pairs retained above the largest gap.}
+\item{selected_vars}{Variables appearing in retained pairs.}
+\item{index}{The scagnostic used.}
 }
 }
 \description{
-Computes a selected scagnostic for every pair of numeric variables
-and ranks the pairs in descending order of their index values.
+Computes and ranks pairwise scagnostic scores.
+Selects high-scoring pairs using the largest consecutive
+score gap and retains all variables appearing in those pairs.
 }
 \examples{
 scag_preprocess(
@@ -32,12 +35,5 @@ scag_preprocess(
   scag = "stringy05",
   rescale = TRUE
 )
-
-scag_preprocess(
-  hidden_stringy,
-  scag = "stringy05",
-  rescale = TRUE
-)
-
 
 }

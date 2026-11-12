@@ -21,7 +21,7 @@ gen_hidden_stringy <- function(
     p = 10,
     pattern = "cubic",
     theta = pi / 4,
-    seed = 825
+    seed = 918
 ) {
 
   pattern <- match.arg(
