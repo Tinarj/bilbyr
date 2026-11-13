@@ -18,27 +18,65 @@ execute:
 
 ## Aim of the experiment
 
-This experiment investigates whether the **Jellyfish Search Optimiser** can recover a hidden cubic structure from a ten-variable synthetic dataset and whether scagnostic preprocessing improves its performance.
+We investigate whether the **Jellyfish Search Optimiser** in `tourr` can recover a cubic pattern hidden in a ten-dimensional dataset created by `bilbyr::gen_hidden_stringy()`. We initially compare **30 jellies** (the default population size) with **100 jellies**,  holding the remaining search settings fixed. We record the best discovered Stringy05 value and the elapsed runtime. If recovery is inadequate, later experiments will vary `max.tries`.
 
-First, we identify the **true generating projection** and run Jellyfish on all ten variables without preprocessing. Next, we use pairwise Stringy05 scores to select promising variables and run Jellyfish again on the reduced dataset.
+## How Jellyfish searches
 
-Finally, we compare both approaches in terms of **Stringy05 score, recovery of the true projection, computational time, and optimisation efficiency**. 
+Jellyfish is a stochastic, population-based optimiser for projection pursuit. Instead of searching with a single candidate, it maintains a population of *jellies*. Each jelly is a candidate orthonormal projection basis $A_j\in\mathbb{R}^{p\times 2}$; projecting the observations gives $XA_j$. We use rescaled Stringy05 as the interestingness index:
 
-## Generate the dataset
+$$
+A^* = \underset{A^\top A=I_2}{\arg\max}\;I_{\mathrm{Stringy05}}(XA).
+$$
 
-We use the default arguments of `gen_hidden_stringy()`: 500 observations, 10 variables, a cubic pattern, rotation angle 5 degrees and seed 918.
+At the start, Jellyfish generates random projection bases and evaluates their indices. During the search it updates the candidates using population-guided and stochastic movements, orthonormalises proposed bases, and evaluates the new projections. We retain *only records with `info == "current_best"`* for the subsequent analysis, and select the highest-scoring basis from those records.
 
 
 
-## Setup and generate one dataset
+Two settings are particularly important:
+
+- **`n_jellies`** controls the number of candidate projection bases maintained in the population. The default in `guided_tour()` is **30**. A larger population may explore more regions of the projection space, but increases computational cost.
+- **`max.tries`** limits the search's unsuccessful attempts. The `guided_tour()` default is **25**. Allowing more attempts can extend the search and increase computational cost.
+
+`max_frames = 100` is a **tour animation frame limit**; it is not the same as either of these optimiser settings. A fixed seed makes an individual configuration reproducible.
+
+In this first comparison we set `max.tries = 25` explicitly for both runs, changing **only `n_jellies`** from 30 to 100. A later experiment will vary `max.tries`.
+
+## The hidden cubic dataset and rotation angle
+
+We use the built-in generator `bilbyr::gen_hidden_stringy()`. It creates $n=500$ observations and $p=10$ variables. The original clean cubic-pattern coordinates are $s_1$ and $s_2$ (both sample-standardised); the generator combines them with independent Gaussian nuisance coordinates $n_1$ and $n_2$:
+
+$$
+\begin{aligned}
+x_1 &= \cos(\theta)s_1+\sin(\theta)n_1, &
+x_3 &= -\sin(\theta)s_1+\cos(\theta)n_1,\\
+x_2 &= \cos(\theta)s_2+\sin(\theta)n_2, &
+x_4 &= -\sin(\theta)s_2+\cos(\theta)n_2.
+\end{aligned}
+$$
+
+Thus **the two signal coordinates are mixed across `x1`–`x4`**: `x1` and `x2` contain the original signal with nuisance contamination, while `x3` and `x4` contain the complementary mixtures of signal and nuisance. The six extra variables **`x5`–`x10` are independent Gaussian noise**. The signal coordinates have sample SD 1, and the nuisance variables are drawn with population SD 1; therefore the observed variables are on approximately comparable scales.
+
+### How the rotation angle redistributes the signal
+
+For $0^\circ\leq\theta\leq90^\circ$, the signal has coefficient $\cos\theta$ in $(x_1,x_2)$ and coefficient $-\sin\theta$ in $(x_3,x_4)$. Thus, **at small angles the pattern is more visible in `x1` and `x2`**, while **at large angles it is more visible in `x3` and `x4`**. At **45°**, both pairs have equal signal and nuisance coefficient magnitudes ($1/\sqrt{2}$).
+
+We begin at **5°** ($\theta=5\pi/180\approx0.0873$ radians), where $\cos\theta\approx0.9962$ and $\sin\theta\approx0.0872$. The observed pair $(x_1,x_2)$ is therefore strongly signal-dominated. At **90°**, the clean signal appears instead in $(-x_3,-x_4)$.
+
+
+The rotation preserves the total signal information: the full four-variable transformation is orthogonal and invertible, so the original pattern is recoverable at every angle. In principle, the best achievable projection-pursuit result in the full 10D space should not depend on the angle.
+
+We therefore start with a **small angle (5°)**, and later test **45°**, where signal and nuisance are equally mixed in the observed coordinate pairs. Large angles near 90° mainly move the visible signal from `x1`–`x2` to `x3`–`x4`, rather than removing it. We will compare whether Jellyfish can recover the known signal plane and how much search effort is required, without assuming that a larger angle is inherently harder.
+
+
+
+## Setup: one fixed 10D dataset
 
 ```{r}
 #| label: setup
 library(tidyverse)
 library(tourr)
 library(bilbyr)
-
-source("../../../data-raw/hidden_stringy.R")
+library(cassowaryr)
 
 n <- 500
 p <- 10
@@ -47,313 +85,441 @@ degrees <- 5
 theta <- degrees * pi / 180
 seed <- 918
 
-set.seed(seed)
-X <- gen_hidden_stringy(
-  n = n,
-  p = p,
-  pattern = pattern,
-  theta = theta,
-  seed = seed
+X <- bilbyr::gen_hidden_stringy(
+  n = n, p = p, pattern = pattern,
+  theta = theta, seed = seed
 ) |> as.matrix()
-
-stopifnot(ncol(X) == 10L, all(is.finite(X)))
 colnames(X) <- paste0("x", seq_len(p))
+
+results_dir <- here::here("experiments", "stringy_index", "optimizer_results")
+
+# Stringy05 index is used for the benchmark and the search.
+stringy_pp <- function(data) {
+  as.numeric(cassowaryr::sc_stringy05(data[, 1], data[, 2], rescale = TRUE))
+}
 ```
 
-```{r}
-#| label: true-basis
+### Known recovery projection
 
-# True projection matrix (inverse rotation)
+Because the angle is known in this simulation, we can recover the embedded signal exactly by the inverse rotation:
+
+$$
+s_1=\cos(\theta)x_1-\sin(\theta)x_3,\qquad
+s_2=\cos(\theta)x_2-\sin(\theta)x_4.
+$$
+
+
+```{r}
+#| label: ground-truth
 A_true <- matrix(
-  0,
-  nrow = ncol(X),
-  ncol = 2,
+  0, nrow = p, ncol = 2,
   dimnames = list(colnames(X), c("axis1", "axis2"))
 )
-
-A_true["x1", 1] <-  cos(theta)
+A_true["x1", 1] <- cos(theta)
 A_true["x3", 1] <- -sin(theta)
-A_true["x2", 2] <-  cos(theta)
+A_true["x2", 2] <- cos(theta)
 A_true["x4", 2] <- -sin(theta)
 
-A_true
-
-# Function to calculate rescaled Stringy05
-stringy_index <- function(z) {
-  as.numeric(
-    cassowaryr::sc_stringy05(
-      z[, 1],
-      z[, 2],
-      rescale = TRUE
-    )
-  )
-}
-
-# 1. Mixed structure (observed x1–x2)
-Z_mixed <- as.matrix(X[, c("x1", "x2")])
-
-mixed_score <- stringy_index(Z_mixed)
-
-# 2. Original structure (recovered through inverse rotation)
 Z_true <- X %*% A_true
+Z_observed <- X[, c("x1", "x2"), drop = FALSE]
+ground_truth_score <- stringy_pp(Z_true)
+observed_score <- stringy_pp(Z_observed)
 
-oracle_score <- stringy_index(Z_true)
-
-# Print comparison
-cat("Rotation angle:", theta * 180 / pi, "degrees\n")
-cat("Stringy05 of mixed x1–x2:", mixed_score, "\n")
-cat("Stringy05 of recovered original cubic:", oracle_score, "\n")
+knitr::kable(
+  tibble(
+    view = c("Observed (x1, x2)", "Known recovery projection"),
+    stringy05 = c(observed_score, ground_truth_score)
+  ), digits = 4
+)
 ```
 
-
-
 ```{r}
-#| label: fig-true-projection
-#| fig-cap: "The known generating projection recovers the embedded noise-free cubic structure (up to a common magnitude)."
-#| fig-width: 7
-#| fig-height: 5
-
-tibble(axis1 = Z_true[, 1], axis2 = Z_true[, 2]) |>
-  ggplot(aes(axis1, axis2)) +
-  geom_point(colour = "#2679A8", alpha = 0.7, size = 0.8) +
-  labs(title = paste0("Known generating projection — Stringy05 = ",
-                      round(oracle_score, 3)),
-       x = "True projection axis 1", y = "True projection axis 2") + 
+#| label: fig-reference
+#| fig-cap: "Observed x1–x2 pair and the inverse-rotation recovery at 5 degrees."
+#| fig-width: 10
+#| fig-height: 4.5
+bind_rows(
+  tibble(x = Z_observed[, 1], y = Z_observed[, 2], view = "Observed (x1, x2)"),
+  tibble(x = Z_true[, 1], y = Z_true[, 2], view = "Known recovery")
+) |>
+  ggplot(aes(x, y)) +
+  geom_point(size = 0.7, alpha = 0.65, colour = "#2679A8") +
+  facet_wrap(~view, nrow = 1) +
+  coord_equal() +
   theme(aspect.ratio = 1)
 ```
 
+## Running and recording expensive searches
 
-# Run Jellyfish without preprocessing
+To avoid rerunning Jellyfish on every Quarto render, **both optimisation chunks below use `#| eval: false`**. Run each chunk **manually in RStudio**, after executing the setup and ground-truth chunks. Each manual run saves its best basis, full `current_best` history, Stringy05 scores, and elapsed runtime in an `.rds` file inside `experiments/stringy_index/optimizer_results/`.
 
-```{r, include=FALSE}
-##| label: run-jellyfish
-#| include: false
 
-library(tourr)
-library(tidyverse)
-library(cassowaryr)
+## Experiment 1: Default population — 30 jellies, 25 max tries
 
-# Stringy05 projection pursuit index
-stringy_pp <- function(data) {
-  as.numeric(
-    cassowaryr::sc_stringy05(
-      data[, 1],
-      data[, 2],
-      rescale = TRUE
-    )
-  )
-}
+This establishes the baseline: **30 jellies**, **`max.tries = 25`**, `max_frames = 100`, and optimiser seed 1111. After the run we keep only the `current_best` records, then choose the highest-scoring one.
 
-# Run Jellyfish using all 10 variables
+```{r}
+#| label: run-jellyfish-30
+#| eval: false
+
 set.seed(1111)
-
-res <- animate_xy(
-  X,
-  guided_tour(
-    index_f = stringy_pp,
-    d = 2,
-    search_f = search_jellyfish,
-    n_jellies = 30
-  ),
-  max_frames = 100
-)
-
-# Extract all recorded bases from the first loop
-bases_all <- res |>
-  filter(info == "current_best") |>
-  pull(basis)
-
-# Calculate Stringy05 for every recorded basis
-basis_scores <- tibble(
-  id = seq_along(bases_all),
-  stringy = purrr::map_dbl(
-    bases_all,
-    \(A) stringy_pp(X %*% A)
+time_30 <- system.time({
+  res_30 <- animate_xy(
+    X,
+    guided_tour(
+      index_f = stringy_pp,
+      d = 2,
+      search_f = search_jellyfish
+    ),
+    max_frames = 100
   )
-)
+})
+runtime_30 <- unname(time_30["elapsed"])
 
-# Find the highest-scoring recorded projection
-best_id <- which.max(basis_scores$stringy)
+best_history_30 <- res_30 |>
+  dplyr::filter(info == "current_best")
 
-A_best <- bases_all[[best_id]]
+best_row_30 <- best_history_30 |>
+  dplyr::slice_max(index_val, n = 1, with_ties = FALSE)
+A_best_30 <- best_row_30$basis[[1]]
+best_score_30 <- stringy_pp(X %*% A_best_30)
 
-best_score <- basis_scores$stringy[best_id]
-
-# Print comparison with earlier scores
-cat("Mixed x1-x2 Stringy05:", mixed_score, "\n")
-cat("Original cubic Stringy05:", oracle_score, "\n")
-cat("Best Jellyfish Stringy05:", best_score, "\n")
-
-# Remove near-duplicate bases for a smoother GIF
-bases_gif <- tourr::check_dup(bases_all, 0.1)
-
-# Save the recorded bases and scores
 saveRDS(
   list(
-    bases = bases_all,
-    scores = basis_scores,
-    best_basis = A_best,
-    best_score = best_score
+    history = best_history_30,
+    best_basis = A_best_30,
+    best_score = best_score_30,
+    runtime_seconds = runtime_30,
+    timing = time_30,
+    n_jellies = 30,
+    max_tries = 25,
+    dimensions = ncol(X),
+    angle_deg = degrees,
+    optimizer_seed = 1111
   ),
-  "jellyfish_cubic_5deg_results.rds"
+  file.path(results_dir, "jellyfish_cubic_5deg_10D_30j_25tries_results.rds")
 )
+bases_30 <- best_history_30 |> pull(basis)
+bases_gif_30 <- tourr::check_dup(bases_30, 0.1)
 
-# Render GIF from the recorded Jellyfish bases
-gif_file <- "jellyfish_cubic_5deg.gif"
+gif_file_30 <- file.path(
+  results_dir,
+  "jellyfish_cubic_5deg_10D_30j_25tries.gif"
+)
 
 tourr::render_gif(
   data = X,
-  tour_path = planned_tour(bases_gif),
+  tour_path = planned_tour(bases_gif_30),
   display = display_xy(),
-  gif_file = gif_file,
+  gif_file = gif_file_30,
   frames = 100,
   apf = 1 / 12
 )
 ```
 
 ```{r}
-#| label: fig-jellyfish-gif
+#| label: load-jellyfish-30
 #| echo: false
-#| warning: false
-#| message: false
-#| fig-cap: "Jellyfish guided tour of the 10-dimensional hidden cubic dataset at 5°."
-#| out-width: "80%"
-
-knitr::include_graphics(gif_file)
-```
-
-
-```{r}
-#| label: fig-best-jellyfish
-#| fig-cap: "Highest-scoring recorded Jellyfish projection."
-#| fig-width: 7
-#| fig-height: 5
-
-best_projection <- X %*% A_best
-
-plot_data <- tibble(
-  x = best_projection[, 1],
-  y = best_projection[, 2]
+file_30 <- file.path(
+  results_dir,
+  "jellyfish_cubic_5deg_10D_30j_25tries_results.rds"
 )
 
-ggplot(plot_data, aes(x, y)) +
-  geom_point(
-    colour = "#2679A8",
-    alpha = 0.7,
-    size = 0.7
-  ) +
-  coord_fixed() +
+gif_file_30 <- file.path(
+  results_dir,
+  "jellyfish_cubic_5deg_10D_30j_25tries.gif"
+)
+
+saved_30 <- readRDS(file_30)
+A_best_30 <- saved_30$best_basis
+best_score_30 <- saved_30$best_score
+runtime_30 <- saved_30$runtime_seconds
+```
+
+```{r}
+#| label: fig-jellyfish-gif-30
+#| echo: false
+#| fig-cap: "Jellyfish guided tour GIF: 30 jellies and 25 max tries."
+
+
+knitr::include_graphics(gif_file_30)
+```
+
+```{r}
+#| label: fig-jellyfish-30
+#| fig-cap: "Highest-scoring current_best projection: 30 jellies and 25 max tries."
+#| fig-width: 7
+#| fig-height: 5
+Z_best_30 <- X %*% A_best_30
+
+ggplot(tibble(x = Z_best_30[, 1], y = Z_best_30[, 2]), aes(x, y)) +
+  geom_point(colour = "#2679A8", alpha = 0.7, size = 0.7) +
+  coord_equal() +
   labs(
-    title = "Best Jellyfish projection",
-    subtitle = paste(
-      "Stringy05 =",
-      round(best_score, 4)
-    ),
-    x = "Projection 1",
-    y = "Projection 2"
+    title = "Best recorded projection — 30 jellies",
+    subtitle = paste0("Stringy05 = ", round(best_score_30, 4)),
+    x = "Projection 1", y = "Projection 2"
   ) +
-  theme_bw()
+  theme(aspect.ratio = 1)
 ```
 
 ```{r}
-#| label: tbl-jellyfish-comparison
-#| tbl-cap: "Stringy05 comparison of the mixed structure, original cubic structure, and best recorded Jellyfish projection."
-
-tibble(
-  projection = c(
-    "Mixed x1-x2 (5°)",
-    "Original cubic (oracle)",
-    "Best Jellyfish projection"
+#| label: runtime-jellyfish-30
+#| echo: false
+knitr::kable(
+  tibble::tibble(
+    Dimensions = ncol(X),
+    Jellies = 30,
+    `Max tries` = 25,
+    `Runtime (seconds)` = round(runtime_30, 2),
+    `Best Stringy05` = round(best_score_30, 4)
   ),
-  stringy05 = c(
-    mixed_score,
-    oracle_score,
-    best_score
-  )
-) |>
-  knitr::kable(digits = 4)
+  caption = "Jellyfish optimisation results: 30 jellies",
+  align = "c"
+)
 ```
 
-Now, let's use preprocessing.
+## Experiment 2: Larger population — 100 jellies, 25 max tries
+
+We now change **only the population size** from 30 to 100. The dataset, index, optimiser seed, `max.tries = 25`, and `max_frames = 100` remain the same.
 
 ```{r}
-#| label: select-x1-x4
-
-selected_vars <- c("x1", "x2", "x3", "x4")
-X_selected <- X[, selected_vars, drop = FALSE]
-
-cat("Selected variables:", selected_vars, "\n")
-cat("Number of selected variables:", ncol(X_selected), "\n")
-```
-
-
-```{r}
-#| label: run-jellyfish-x1-x4
-#| include: false
+#| label: run-jellyfish-100
+#| eval: false
 
 set.seed(1111)
 
-res_selected <- animate_xy(
-  X_selected,
-  guided_tour(
-    index_f = stringy_pp,
-    d = 2,
-    search_f = search_jellyfish,
-    n_jellies = 30
+time_100 <- system.time({
+  res_100 <- animate_xy(
+    X,
+    guided_tour(
+      index_f = stringy_pp,
+      d = 2,
+      search_f = search_jellyfish,
+      n_jellies = 100,
+      max.tries = 25
+    ),
+    max_frames = 100
+  )
+})
+
+runtime_100 <- unname(time_100["elapsed"])
+
+best_history_100 <- res_100 |>
+  dplyr::filter(info == "current_best")
+
+stopifnot(nrow(best_history_100) > 0)
+
+best_row_100 <- best_history_100 |>
+  dplyr::slice_max(index_val, n = 1, with_ties = FALSE)
+
+A_best_100 <- best_row_100$basis[[1]]
+best_score_100 <- stringy_pp(X %*% A_best_100)
+
+saveRDS(
+  list(
+    history = best_history_100,
+    best_basis = A_best_100,
+    best_score = best_score_100,
+    runtime_seconds = runtime_100,
+    timing = time_100,
+    n_jellies = 100,
+    max_tries = 25,
+    dimensions = ncol(X),
+    angle_deg = degrees,
+    optimizer_seed = 1111
   ),
-  max_frames = 100
+  file.path(results_dir, "jellyfish_cubic_5deg_10D_100j_25tries_results.rds")
 )
 
+bases_100 <- best_history_100$basis
+bases_gif_100 <- tourr::check_dup(bases_100, 0.1)
 
-bases_selected <- res_selected |>
-  filter(info == "current_best") |>
-  pull(basis)
-
-scores_selected <- purrr::map_dbl(
-  bases_selected,
-  \(A) stringy_pp(X_selected %*% A)
+gif_file_100 <- file.path(
+  results_dir,
+  "jellyfish_cubic_5deg_10D_100j_25tries.gif"
 )
 
-best_id_selected <- which.max(scores_selected)
-
-A_best_selected <- bases_selected[[best_id_selected]]
-best_score_selected <- scores_selected[best_id_selected]
-
-cat("Best Jellyfish Stringy05:", best_score_selected, "\n")
-
-bases_gif_selected <- check_dup(bases_selected, 0.1)
-
-
-gif_selected <- "jellyfish_x1_x4_5deg.gif"
-
-render_gif(
-  data = X_selected,
-  tour_path = planned_tour(bases_gif_selected),
-  display = display_xy(),
-  gif_file = gif_selected,
+tourr::render_gif(
+  data = X,
+  tour_path = tourr::planned_tour(bases_gif_100),
+  display = tourr::display_xy(),
+  gif_file = gif_file_100,
   frames = 100,
   apf = 1 / 12
 )
 ```
-```{r}
-#| label: fig-jellyfish-x1-x4
-#| echo: false
-#| fig-cap: "Jellyfish optimisation using four selected variables."
-#| out-width: "80%"
 
-knitr::include_graphics(gif_selected)
+```{r}
+#| label: load-jellyfish-100
+#| echo: false
+
+file_100 <- file.path(
+  results_dir,
+  "jellyfish_cubic_5deg_10D_100j_25tries_results.rds"
+)
+
+gif_file_100 <- file.path(
+  results_dir,
+  "jellyfish_cubic_5deg_10D_100j_25tries.gif"
+)
+
+
+saved_100 <- readRDS(file_100)
+
+A_best_100 <- saved_100$best_basis
+best_score_100 <- saved_100$best_score
+runtime_100 <- saved_100$runtime_seconds
 ```
 
 ```{r}
-#| label: fig-best-jellyfish-x1-x4
+#| label: fig-jellyfish-gif-100
+#| echo: false
+#| fig-cap: "Jellyfish guided tour: 100 jellies, 25 max tries."
+#| out-width: "80%"
 
-Z_best_selected <- X_selected %*% A_best_selected
+knitr::include_graphics(gif_file_100)
+```
+
+```{r}
+#| label: runtime-jellyfish-100
+#| echo: false
+
+knitr::kable(
+  tibble::tibble(
+    Dimensions = ncol(X),
+    Jellies = 100,
+    `Max tries` = 25,
+    `Runtime (seconds)` = round(runtime_100, 2),
+    `Best Stringy05` = round(best_score_100, 4)
+  ),
+  caption = "Jellyfish optimisation results: 100 jellies",
+  align = "c"
+)
+```
+## Experiment 3: Further increasing the number of jellies — 300 jellies, 25 max tries
+
+The previous experiment showed that increasing the population from 30 to 100 jellies did not substantially improve the best Stringy05 value. This suggests that a larger population alone may not be sufficient to recover the hidden cubic structure.
+
+We now increase the population further to 300 jellies, while keeping `max.tries = 25`. The dataset, scagnostic index, optimiser seed, and `max_frames = 100` remain unchanged.
+
+The aim is to investigate whether a substantially larger population improves the discovered projection or whether the optimisation continues to produce similar Stringy05 values. We also examine the additional computational cost.
+
+### Run Jellyfish with 300 jellies and save the results and GIF
+
+```{r}
+#| label: run-jellyfish-300
+#| eval: false
+
+set.seed(1111)
+
+time_300 <- system.time({
+  res_300 <- animate_xy(
+    X,
+    guided_tour(
+      index_f = stringy_pp,
+      d = 2,
+      search_f = search_jellyfish,
+      n_jellies = 300,
+      max.tries = 25
+    ),
+    max_frames = 100
+  )
+})
+
+runtime_300 <- unname(time_300["elapsed"])
+
+best_history_300 <- res_300 |>
+  dplyr::filter(info == "current_best")
+
+stopifnot(nrow(best_history_300) > 0)
+
+best_row_300 <- best_history_300 |>
+  dplyr::slice_max(index_val, n = 1, with_ties = FALSE)
+
+A_best_300 <- best_row_300$basis[[1]]
+best_score_300 <- stringy_pp(X %*% A_best_300)
+
+saveRDS(
+  list(
+    history = best_history_300,
+    best_basis = A_best_300,
+    best_score = best_score_300,
+    runtime_seconds = runtime_300,
+    timing = time_300,
+    n_jellies = 300,
+    max_tries = 25,
+    dimensions = ncol(X),
+    angle_deg = degrees,
+    optimizer_seed = 1111
+  ),
+  file.path(results_dir, "jellyfish_cubic_5deg_10D_300j_25tries_results.rds")
+)
+
+
+bases_300 <- best_history_300$basis
+bases_gif_300 <- tourr::check_dup(bases_300, 0.1)
+
+gif_file_300 <- file.path(
+  results_dir,
+  "jellyfish_cubic_5deg_10D_300j_25tries.gif"
+)
+
+tourr::render_gif(
+  data = X,
+  tour_path = tourr::planned_tour(bases_gif_300),
+  display = tourr::display_xy(),
+  gif_file = gif_file_300,
+  frames = 100,
+  apf = 1 / 12
+)
+```
+
+
+```{r}
+#| label: load-jellyfish-300
+#| echo: false
+
+file_300 <- file.path(
+  results_dir,
+  "jellyfish_cubic_5deg_10D_300j_25tries_results.rds"
+)
+
+gif_file_300 <- file.path(
+  results_dir,
+  "jellyfish_cubic_5deg_10D_300j_25tries.gif"
+)
+
+saved_300 <- readRDS(file_300)
+
+A_best_300 <- saved_300$best_basis
+best_score_300 <- saved_300$best_score
+runtime_300 <- saved_300$runtime_seconds
+```
+
+### Display the saved GIF
+
+```{r}
+#| label: fig-jellyfish-gif-300
+#| echo: false
+#| fig-cap: "Jellyfish guided tour: 300 jellies, 25 max tries."
+#| out-width: "80%"
+
+knitr::include_graphics(gif_file_300)
+```
+
+### Display the highest-scoring projection
+
+```{r}
+#| label: fig-jellyfish-300
+#| fig-cap: "Highest-scoring current_best projection: 300 jellies and 25 max tries."
+#| fig-width: 7
+#| fig-height: 5
+
+Z_best_300 <- X %*% A_best_300
 
 ggplot(
-  tibble(
-    x = Z_best_selected[, 1],
-    y = Z_best_selected[, 2]
-  ),
+  tibble(x = Z_best_300[, 1], y = Z_best_300[, 2]),
   aes(x, y)
 ) +
   geom_point(
@@ -361,13 +527,1018 @@ ggplot(
     alpha = 0.7,
     size = 0.7
   ) +
-  coord_fixed() +
+  coord_equal() +
   labs(
-    title = "Best Jellyfish projection (4D)",
-    subtitle = paste(
-      "Stringy05 =", round(best_score_selected, 4)
-    )
+    title = "Best recorded projection — 300 jellies",
+    subtitle = paste0("Stringy05 = ", round(best_score_300, 4)),
+    x = "Projection 1",
+    y = "Projection 2"
+  )
+```
+
+### Runtime and best Stringy05 table
+
+```{r}
+#| label: runtime-jellyfish-300
+#| echo: false
+
+knitr::kable(
+  tibble::tibble(
+    Dimensions = ncol(X),
+    Jellies = 300,
+    `Max tries` = 25,
+    `Runtime (seconds)` = round(runtime_300, 2),
+    `Best Stringy05` = round(best_score_300, 4)
+  ),
+  caption = "Jellyfish optimisation results: 300 jellies",
+  align = "c"
+)
+```
+## Experiment 4: Increasing max.tries — 30 jellies, 100 max tries
+
+The previous experiments showed that increasing the population size from 30 to 100 and 300 jellies, while keeping `max.tries = 25`, produced only small improvements in the best Stringy05 value, which remained around 0.49.
+
+This suggests that increasing the population size alone may not be sufficient to recover the hidden cubic structure. We now investigate whether allowing the optimiser more search attempts improves its performance.
+
+We return to 30 jellies and increase `max.tries` from 25 to 100, while keeping the dataset, index, optimiser seed, and `max_frames = 100` unchanged.
+
+### Run Jellyfish and save the results and GIF
+
+
+```{r}
+#| label: run-jellyfish-30-100tries
+#| eval: false
+
+set.seed(1111)
+
+time_30_100 <- system.time({
+  res_30_100 <- animate_xy(
+    X,
+    guided_tour(
+      index_f = stringy_pp,
+      d = 2,
+      search_f = search_jellyfish,
+      n_jellies = 30,
+      max.tries = 100
+    ),
+    max_frames = 100
+  )
+})
+
+runtime_30_100 <- unname(time_30_100["elapsed"])
+
+best_history_30_100 <- res_30_100 |>
+  dplyr::filter(info == "current_best")
+
+stopifnot(nrow(best_history_30_100) > 0)
+
+best_row_30_100 <- best_history_30_100 |>
+  dplyr::slice_max(index_val, n = 1, with_ties = FALSE)
+
+A_best_30_100 <- best_row_30_100$basis[[1]]
+best_score_30_100 <- stringy_pp(X %*% A_best_30_100)
+
+saveRDS(
+  list(
+    history = best_history_30_100,
+    best_basis = A_best_30_100,
+    best_score = best_score_30_100,
+    runtime_seconds = runtime_30_100,
+    timing = time_30_100,
+    n_jellies = 30,
+    max_tries = 100,
+    dimensions = ncol(X),
+    angle_deg = degrees,
+    optimizer_seed = 1111
+  ),
+  file.path(
+    results_dir,
+    "jellyfish_cubic_5deg_10D_30j_100tries_results.rds"
+  )
+)
+
+bases_30_100 <- best_history_30_100$basis
+bases_gif_30_100 <- tourr::check_dup(bases_30_100, 0.1)
+
+gif_file_30_100 <- file.path(
+  results_dir,
+  "jellyfish_cubic_5deg_10D_30j_100tries.gif"
+)
+
+tourr::render_gif(
+  data = X,
+  tour_path = tourr::planned_tour(bases_gif_30_100),
+  display = tourr::display_xy(),
+  gif_file = gif_file_30_100,
+  frames = 100,
+  apf = 1 / 12
+)
+```
+
+
+```{r}
+#| label: load-jellyfish-30-100tries
+#| echo: false
+
+file_30_100 <- file.path(
+  results_dir,
+  "jellyfish_cubic_5deg_10D_30j_100tries_results.rds"
+)
+
+gif_file_30_100 <- file.path(
+  results_dir,
+  "jellyfish_cubic_5deg_10D_30j_100tries.gif"
+)
+
+
+saved_30_100 <- readRDS(file_30_100)
+
+A_best_30_100 <- saved_30_100$best_basis
+best_score_30_100 <- saved_30_100$best_score
+runtime_30_100 <- saved_30_100$runtime_seconds
+```
+
+### Display the GIF
+
+```{r}
+#| label: fig-jellyfish-gif-30-100tries
+#| echo: false
+#| fig-cap: "Jellyfish guided tour: 30 jellies, 100 max tries."
+#| out-width: "80%"
+
+knitr::include_graphics(gif_file_30_100)
+```
+
+### Display the highest-scoring projection
+
+```{r}
+#| label: fig-jellyfish-30-100tries
+#| fig-cap: "Highest-scoring projection: 30 jellies and 100 max tries."
+#| fig-width: 7
+#| fig-height: 5
+
+Z_best_30_100 <- X %*% A_best_30_100
+
+ggplot(
+  tibble(x = Z_best_30_100[, 1], y = Z_best_30_100[, 2]),
+  aes(x, y)
+) +
+  geom_point(
+    colour = "#2679A8",
+    alpha = 0.7,
+    size = 0.7
   ) +
-  theme_bw()
+  coord_equal() +
+  labs(
+    title = "Best recorded projection — 30 jellies, 100 max tries",
+    subtitle = paste0("Stringy05 = ", round(best_score_30_100, 4)),
+    x = "Projection 1",
+    y = "Projection 2"
+  )
+```
+
+### Runtime and best Stringy05
+
+```{r}
+#| label: runtime-jellyfish-30-100tries
+#| echo: false
+
+knitr::kable(
+  tibble::tibble(
+    Dimensions = ncol(X),
+    Jellies = 30,
+    `Max tries` = 100,
+    `Runtime (seconds)` = round(runtime_30_100, 2),
+    `Best Stringy05` = round(best_score_30_100, 4)
+  ),
+  caption = "Jellyfish optimisation results: 30 jellies, 100 max tries",
+  align = "c"
+)
+```
+## Experiment 5: Increasing both population size and max tries — 100 jellies, 100 max tries
+
+We now investigate whether increasing both population size and search attempts improves the optimisation performance.
+
+We use 100 jellies and `max.tries = 100`, keeping the dataset, scagnostic index, optimiser seed, and `max_frames = 100` unchanged. 
+
+### Run Jellyfish and save the results and GIF
+
+
+```{r}
+#| label: run-jellyfish-100-100tries
+#| eval: false
+
+set.seed(1111)
+
+time_100_100 <- system.time({
+  res_100_100 <- animate_xy(
+    X,
+    guided_tour(
+      index_f = stringy_pp,
+      d = 2,
+      search_f = search_jellyfish,
+      n_jellies = 100,
+      max.tries = 100
+    ),
+    max_frames = 100
+  )
+})
+
+runtime_100_100 <- unname(time_100_100["elapsed"])
+
+best_history_100_100 <- res_100_100 |>
+  dplyr::filter(info == "current_best")
+
+stopifnot(nrow(best_history_100_100) > 0)
+
+best_row_100_100 <- best_history_100_100 |>
+  dplyr::slice_max(index_val, n = 1, with_ties = FALSE)
+
+A_best_100_100 <- best_row_100_100$basis[[1]]
+best_score_100_100 <- stringy_pp(X %*% A_best_100_100)
+
+saveRDS(
+  list(
+    history = best_history_100_100,
+    best_basis = A_best_100_100,
+    best_score = best_score_100_100,
+    runtime_seconds = runtime_100_100,
+    timing = time_100_100,
+    n_jellies = 100,
+    max_tries = 100,
+    dimensions = ncol(X),
+    angle_deg = degrees,
+    optimizer_seed = 1111
+  ),
+  file.path(
+    results_dir,
+    "jellyfish_cubic_5deg_10D_100j_100tries_results.rds"
+  )
+)
+
+bases_100_100 <- best_history_100_100$basis
+bases_gif_100_100 <- tourr::check_dup(bases_100_100, 0.1)
+
+gif_file_100_100 <- file.path(
+  results_dir,
+  "jellyfish_cubic_5deg_10D_100j_100tries.gif"
+)
+
+tourr::render_gif(
+  data = X,
+  tour_path = tourr::planned_tour(bases_gif_100_100),
+  display = tourr::display_xy(),
+  gif_file = gif_file_100_100,
+  frames = 100,
+  apf = 1 / 12
+)
+```
+
+
+```{r}
+#| label: load-jellyfish-100-100tries
+#| echo: false
+
+file_100_100 <- file.path(
+  results_dir,
+  "jellyfish_cubic_5deg_10D_100j_100tries_results.rds"
+)
+
+gif_file_100_100 <- file.path(
+  results_dir,
+  "jellyfish_cubic_5deg_10D_100j_100tries.gif"
+)
+
+saved_100_100 <- readRDS(file_100_100)
+
+A_best_100_100 <- saved_100_100$best_basis
+best_score_100_100 <- saved_100_100$best_score
+runtime_100_100 <- saved_100_100$runtime_seconds
+```
+
+### Display the saved GIF
+
+```{r}
+#| label: fig-jellyfish-gif-100-100tries
+#| echo: false
+#| fig-cap: "Jellyfish guided tour: 100 jellies, 100 max tries."
+#| out-width: "80%"
+
+knitr::include_graphics(gif_file_100_100)
+```
+
+### Display the highest-scoring projection
+
+```{r}
+#| label: fig-jellyfish-100-100tries
+#| fig-cap: "Highest-scoring projection: 100 jellies and 100 max tries."
+#| fig-width: 7
+#| fig-height: 5
+
+Z_best_100_100 <- X %*% A_best_100_100
+
+ggplot(
+  tibble(x = Z_best_100_100[, 1], y = Z_best_100_100[, 2]),
+  aes(x, y)
+) +
+  geom_point(
+    colour = "#2679A8",
+    alpha = 0.7,
+    size = 0.7
+  ) +
+  coord_equal() +
+  labs(
+    title = "Best recorded projection — 100 jellies, 100 max tries",
+    subtitle = paste0("Stringy05 = ", round(best_score_100_100, 4)),
+    x = "Projection 1",
+    y = "Projection 2"
+  )
+```
+
+### Runtime and best Stringy05
+
+```{r}
+#| label: runtime-jellyfish-100-100tries
+#| echo: false
+
+knitr::kable(
+  tibble::tibble(
+    Dimensions = ncol(X),
+    Jellies = 100,
+    `Max tries` = 100,
+    `Runtime (seconds)` = round(runtime_100_100, 2),
+    `Best Stringy05` = round(best_score_100_100, 4)
+  ),
+  caption = "Jellyfish optimisation results: 100 jellies, 100 max tries",
+  align = "c"
+)
+```
+## Experiment 6: Increasing both population size and max tries — 200 jellies, 200 max tries
+
+The previous experiment showed a substantial improvement when increasing both `n_jellies` and `max.tries` to 100, with the best Stringy05 value reaching approximately 0.70, compared with around 0.49 in earlier experiments.
+
+This suggests that increasing search effort may help Jellyfish discover more interesting projections in the 10-dimensional dataset.
+
+We now increase both parameters to 200 jellies and `max.tries = 200`, while keeping the dataset, scagnostic index, optimiser seed, and `max_frames = 100` unchanged. 
+
+###  Run Jellyfish and save the results and GIF
+
+
+```{r}
+#| label: run-jellyfish-200-200tries
+#| eval: false
+
+set.seed(1111)
+
+time_200_200 <- system.time({
+  res_200_200 <- animate_xy(
+    X,
+    guided_tour(
+      index_f = stringy_pp,
+      d = 2,
+      search_f = search_jellyfish,
+      n_jellies = 200,
+      max.tries = 200
+    ),
+    max_frames = 100
+  )
+})
+
+runtime_200_200 <- unname(time_200_200["elapsed"])
+
+best_history_200_200 <- res_200_200 |>
+  dplyr::filter(info == "current_best")
+
+stopifnot(nrow(best_history_200_200) > 0)
+
+best_row_200_200 <- best_history_200_200 |>
+  dplyr::slice_max(index_val, n = 1, with_ties = FALSE)
+
+A_best_200_200 <- best_row_200_200$basis[[1]]
+best_score_200_200 <- stringy_pp(X %*% A_best_200_200)
+
+saveRDS(
+  list(
+    history = best_history_200_200,
+    best_basis = A_best_200_200,
+    best_score = best_score_200_200,
+    runtime_seconds = runtime_200_200,
+    timing = time_200_200,
+    n_jellies = 200,
+    max_tries = 200,
+    dimensions = ncol(X),
+    angle_deg = degrees,
+    optimizer_seed = 1111
+  ),
+  file.path(
+    results_dir,
+    "jellyfish_cubic_5deg_10D_200j_200tries_results.rds"
+  )
+)
+
+bases_200_200 <- best_history_200_200$basis
+bases_gif_200_200 <- tourr::check_dup(bases_200_200, 0.1)
+
+gif_file_200_200 <- file.path(
+  results_dir,
+  "jellyfish_cubic_5deg_10D_200j_200tries.gif"
+)
+
+tourr::render_gif(
+  data = X,
+  tour_path = tourr::planned_tour(bases_gif_200_200),
+  display = tourr::display_xy(),
+  gif_file = gif_file_200_200,
+  frames = 100,
+  apf = 1 / 12
+)
+```
+
+```{r}
+#| label: load-jellyfish-200-200tries
+#| echo: false
+
+file_200_200 <- file.path(
+  results_dir,
+  "jellyfish_cubic_5deg_10D_200j_200tries_results.rds"
+)
+
+gif_file_200_200 <- file.path(
+  results_dir,
+  "jellyfish_cubic_5deg_10D_200j_200tries.gif"
+)
+
+
+saved_200_200 <- readRDS(file_200_200)
+
+A_best_200_200 <- saved_200_200$best_basis
+best_score_200_200 <- saved_200_200$best_score
+runtime_200_200 <- saved_200_200$runtime_seconds
+```
+
+### Display the saved GIF
+
+```{r}
+#| label: fig-jellyfish-gif-200-200tries
+#| echo: false
+#| fig-cap: "Jellyfish guided tour: 200 jellies, 200 max tries."
+#| out-width: "80%"
+
+knitr::include_graphics(gif_file_200_200)
+```
+
+### Display the highest-scoring projection
+
+```{r}
+#| label: fig-jellyfish-200-200tries
+#| fig-cap: "Highest-scoring projection: 200 jellies and 200 max tries."
+#| fig-width: 7
+#| fig-height: 5
+
+Z_best_200_200 <- X %*% A_best_200_200
+
+ggplot(
+  tibble(x = Z_best_200_200[, 1], y = Z_best_200_200[, 2]),
+  aes(x, y)
+) +
+  geom_point(
+    colour = "#2679A8",
+    alpha = 0.7,
+    size = 0.7
+  ) +
+  coord_equal() +
+  labs(
+    title = "Best recorded projection — 200 jellies, 200 max tries",
+    subtitle = paste0("Stringy05 = ", round(best_score_200_200, 4)),
+    x = "Projection 1",
+    y = "Projection 2"
+  )
+```
+
+### Runtime and best Stringy05
+
+```{r}
+#| label: runtime-jellyfish-200-200tries
+#| echo: false
+
+knitr::kable(
+  tibble::tibble(
+    Dimensions = ncol(X),
+    Jellies = 200,
+    `Max tries` = 200,
+    `Runtime (seconds)` = round(runtime_200_200, 2),
+    `Best Stringy05` = round(best_score_200_200, 4)
+  ),
+  caption = "Jellyfish optimisation results: 200 jellies, 200 max tries",
+  align = "c"
+)
+```
+
+> Increasing both the Jellyfish population size and the maximum number of search attempts to 200 did not improve optimisation performance. This demonstrates that increasing search effort does not guarantee a better projection in jellyfish optimisation algorithm. Although greater search effort can improve the chances of discovering interesting projections, but performance also depends on the dataset, the optimisation landscape, and the random search trajectory. Consequently, it is difficult to determine how much additional search effort is sufficient. Rather than continuing to increase these parameters, we next investigate whether scagnostic-based preprocessing can reduce the search space and improve the efficiency and effectiveness of Jellyfish.
+
+## Experiment 7: Scagnostic preprocessing before Jellyfish
+
+We now investigate whether preprocessing can reduce the dimensionality of the search space while retaining the important structure.
+
+First, we apply `scag_preprocess()` to the original 10-dimensional dataset. In our example, the largest-gap selection identifies `x1` and `x2`, which form the highest-scoring observed variable pair.
+
+However, restricting the data to these two variables would not provide a meaningful test of dimension reduction through two-dimensional projection pursuit. Therefore, for this experiment, we additionally retain `x3` and `x4`, which are known from the simulation design to contain the complementary signal-noise mixtures.
+
+We exclude `x5`–`x10`, which are independent Gaussian nuisance variables.
+
+This produces a four-dimensional dataset, allowing Jellyfish to search for an interesting two-dimensional projection. We initially use 30 jellies and 25 max tries, matching the original 10D baseline.
+
+### Apply scagnostic preprocessing to the 10D dataset
+
+```{r}
+#| label: scag-preprocess-10d
+
+preprocess_result <- scag_preprocess(
+  X,
+  scag = "stringy05",
+  rescale = TRUE
+)
+
+preprocess_result
+```
+
+For our current dataset, the expected selected variables are `x1` and `x2`.
+
+```{r}
+#| label: scag-preprocess-scree
+
+plot_scag_scree(preprocess_result)
+```
+
+### Create the reduced 4D dataset
+
+```{r}
+#| label: prepare-4d-data
+
+# Automatically selected variables
+auto_selected <- preprocess_result$selected_vars
+
+# Additional variables known to contain signal in this simulation
+additional_vars <- c("x3", "x4")
+
+selected_vars_4d <- unique(c(auto_selected, additional_vars))
+
+# Reduced dataset
+X_4d <- X[, selected_vars_4d, drop = FALSE]
+
+```
+
+
+
+### Run Jellyfish on the reduced dataset — 30 jellies, 25 max tries
+
+
+```{r}
+#| label: run-jellyfish-4d-30-25tries
+#| eval: false
+
+set.seed(1111)
+
+time_4d_30 <- system.time({
+  res_4d_30 <- animate_xy(
+    X_4d,
+    guided_tour(
+      index_f = stringy_pp,
+      d = 2,
+      search_f = search_jellyfish,
+      n_jellies = 30,
+      max.tries = 25
+    ),
+    max_frames = 100
+  )
+})
+
+runtime_4d_30 <- unname(time_4d_30["elapsed"])
+
+best_history_4d_30 <- res_4d_30 |>
+  dplyr::filter(info == "current_best")
+
+stopifnot(nrow(best_history_4d_30) > 0)
+
+best_row_4d_30 <- best_history_4d_30 |>
+  dplyr::slice_max(index_val, n = 1, with_ties = FALSE)
+
+A_best_4d_30 <- best_row_4d_30$basis[[1]]
+best_score_4d_30 <- stringy_pp(X_4d %*% A_best_4d_30)
+
+saveRDS(
+  list(
+    history = best_history_4d_30,
+    best_basis = A_best_4d_30,
+    best_score = best_score_4d_30,
+    runtime_seconds = runtime_4d_30,
+    timing = time_4d_30,
+    n_jellies = 30,
+    max_tries = 25,
+    dimensions = ncol(X_4d),
+    selected_vars = colnames(X_4d),
+    angle_deg = degrees,
+    optimizer_seed = 1111
+  ),
+  file.path(
+    results_dir,
+    "jellyfish_cubic_5deg_4D_30j_25tries_results.rds"
+  )
+)
+
+bases_4d_30 <- best_history_4d_30$basis
+bases_gif_4d_30 <- tourr::check_dup(bases_4d_30, 0.1)
+
+gif_file_4d_30 <- file.path(
+  results_dir,
+  "jellyfish_cubic_5deg_4D_30j_25tries.gif"
+)
+
+tourr::render_gif(
+  data = X_4d,
+  tour_path = tourr::planned_tour(bases_gif_4d_30),
+  display = tourr::display_xy(),
+  gif_file = gif_file_4d_30,
+  frames = 100,
+  apf = 1 / 12
+)
+```
+
+
+```{r}
+#| label: load-jellyfish-4d-30-25tries
+#| echo: false
+
+file_4d_30 <- file.path(
+  results_dir,
+  "jellyfish_cubic_5deg_4D_30j_25tries_results.rds"
+)
+
+gif_file_4d_30 <- file.path(
+  results_dir,
+  "jellyfish_cubic_5deg_4D_30j_25tries.gif"
+)
+
+
+saved_4d_30 <- readRDS(file_4d_30)
+
+A_best_4d_30 <- saved_4d_30$best_basis
+best_score_4d_30 <- saved_4d_30$best_score
+runtime_4d_30 <- saved_4d_30$runtime_seconds
+```
+
+### Display the GIF
+
+```{r}
+#| label: fig-jellyfish-gif-4d-30
+#| echo: false
+#| fig-cap: "Jellyfish guided tour in 4D: 30 jellies, 25 max tries."
+#| out-width: "80%"
+
+knitr::include_graphics(gif_file_4d_30)
+```
+
+### Display the best projection
+
+```{r}
+#| label: fig-jellyfish-best-4d-30
+#| fig-cap: "Best projection found in the reduced 4D dataset."
+#| fig-width: 7
+#| fig-height: 5
+
+Z_best_4d_30 <- X_4d %*% A_best_4d_30
+
+ggplot(
+  tibble(x = Z_best_4d_30[, 1], y = Z_best_4d_30[, 2]),
+  aes(x, y)
+) +
+  geom_point(
+    colour = "#2679A8",
+    alpha = 0.7,
+    size = 0.7
+  ) +
+  coord_equal() +
+  labs(
+    title = "Best projection — 4D, 30 jellies",
+    subtitle = paste0("Stringy05 = ", round(best_score_4d_30, 4)),
+    x = "Projection 1",
+    y = "Projection 2"
+  ) +
+  theme(aspect.ratio = 1)
+```
+
+### 7. Runtime and best Stringy05
+
+```{r}
+#| label: runtime-jellyfish-4d-30
+#| echo: false
+
+knitr::kable(
+  tibble::tibble(
+    Dimensions = ncol(X_4d),
+    Jellies = 30,
+    `Max tries` = 25,
+    `Runtime (seconds)` = round(runtime_4d_30, 2),
+    `Best Stringy05` = round(best_score_4d_30, 4)
+  ),
+  caption = "Jellyfish optimisation results in the reduced 4D dataset",
+  align = "c"
+)
+```
+```{r}
+#| label: compare-all-experiments
+#| echo: false
+
+comparison_all <- tibble::tibble(
+  Dataset = c(
+    "10D", "10D", "10D", "10D", "10D", "10D",
+    "4D (x1-x4)",
+    "Observed (x1, x2)",
+    "Known recovery projection"
+  ),
+  Jellies = c("30", "100", "300", "30", "100", "200", "30", "_", "_"),
+  `Max tries` = c("25", "25", "25", "100", "100", "200", "25", "_", "_"),
+  `Runtime (seconds)` = c(
+    as.character(round(c(
+      runtime_30,
+      runtime_100,
+      runtime_300,
+      runtime_30_100,
+      runtime_100_100,
+      runtime_200_200,
+      runtime_4d_30
+    ), 2)),
+    "_", "_"
+  ),
+  `Best Stringy05` = round(c(
+    best_score_30,
+    best_score_100,
+    best_score_300,
+    best_score_30_100,
+    best_score_100_100,
+    best_score_200_200,
+    best_score_4d_30,
+    observed_score,
+    ground_truth_score
+  ), 4)
+)
+
+knitr::kable(
+  comparison_all,
+  caption = "Comparison of Jellyfish optimisation results and reference projections",
+  align = "c"
+)
+```
+
+
+## Experiment 8: Can preprocessing help Jellyfish recover the hidden cubic structure at 45°?
+
+In the previous experiments, we investigated Jellyfish's ability to recover the hidden cubic structure at a rotation angle of $5^\circ$ , where the signal was strongly represented in `x1` and `x2`. We observed that increasing the population size and maximum search attempts did not consistently improve optimisation performance. We also introduced scagnostic-based preprocessing to reduce the search space.
+
+We now increase the rotation angle to $45^\circ$, where the signal and noise have equal coefficient magnitudes:
+
+$$ \cos(45^\circ)=\sin(45^\circ)=\frac{1}{\sqrt{2}}\approx0.7071.$$
+
+
+We investigate whether `scag_preprocess()` can still identify interesting variable pairs and whether reducing the search space improves Jellyfish's performance.
+
+### Generate the hidden cubic dataset at $45^\circ$
+
+```{r}
+#| label: setup-45deg
+
+n <- 500
+p <- 10
+degrees_45 <- 45
+theta_45 <- degrees_45 * pi / 180
+
+X_45 <- bilbyr::gen_hidden_stringy(
+  n = n,
+  p = p,
+  pattern = "cubic",
+  theta = theta_45,
+  seed = 918
+) |>
+  as.matrix()
+
+colnames(X_45) <- paste0("x", seq_len(p))
+```
+
+### Visualise the observed and known recovery projections
+
+
+```{r}
+#| label: ground-truth-45deg
+
+A_true_45 <- matrix(0, nrow = p, ncol = 2)
+
+A_true_45[1, 1] <- cos(theta_45)
+A_true_45[3, 1] <- -sin(theta_45)
+
+A_true_45[2, 2] <- cos(theta_45)
+A_true_45[4, 2] <- -sin(theta_45)
+
+Z_true_45 <- X_45 %*% A_true_45
+Z_observed_45 <- X_45[, c("x1", "x2"), drop = FALSE]
+
+ground_truth_score_45 <- stringy_pp(Z_true_45)
+observed_score_45 <- stringy_pp(Z_observed_45)
+
+knitr::kable(
+  tibble::tibble(
+    View = c("Observed (x1, x2)", "Known recovery projection"),
+    Stringy05 = round(
+      c(observed_score_45, ground_truth_score_45), 4
+    )
+  ),
+  caption = "Observed and known recovery Stringy05 values at 45°",
+  align = "c"
+)
+```
+
+Visualise both projections:
+
+```{r}
+#| label: fig-reference-45deg
+#| fig-width: 10
+#| fig-height: 4.5
+
+dplyr::bind_rows(
+  tibble::tibble(
+    x = Z_observed_45[, 1],
+    y = Z_observed_45[, 2],
+    view = "Observed (x1, x2)"
+  ),
+  tibble::tibble(
+    x = Z_true_45[, 1],
+    y = Z_true_45[, 2],
+    view = "Known recovery"
+  )
+) |>
+  ggplot2::ggplot(ggplot2::aes(x, y)) +
+  ggplot2::geom_point(
+    size = 0.7, alpha = 0.65, colour = "#2679A8"
+  ) +
+  ggplot2::facet_wrap(~view, nrow = 1) +
+  ggplot2::coord_equal() +
+  ggplot2::theme_bw() +
+  ggplot2::theme(aspect.ratio = 1)
+```
+
+### Apply scagnostic preprocessing at $45^\circ$
+
+We now test whether `scag_preprocess()` can still identify the important variables when the signal and noise are equally mixed.
+
+```{r}
+#| label: preprocess-45deg
+
+preprocess_45 <- scag_preprocess(
+  X_45,
+  scag = "stringy05",
+  rescale = TRUE
+)
+
+preprocess_45
+```
+
+Show the interactive scree plot:
+
+```{r}
+#| label: scree-45deg
+
+plot_scag_scree(preprocess_45)
+```
+
+We now restrict the dataset to **`x2`, `x7`, `x3`, and `x4`**, the variables appearing in the two highest-ranked pairs identified by scagnostic preprocessing at $45^\circ$. We then apply Jellyfish to this reduced 4D dataset to investigate whether these variables can reveal the hidden cubic structure.
+
+```{r}
+#| label: prepare-preprocessed-4d-45deg
+
+selected_vars_45 <- c("x2", "x7", "x3", "x4")
+
+X_pre_45 <- X_45[, selected_vars_45, drop = FALSE]
+
+```
+
+```{r}
+#| label: run-jellyfish-preprocessed-45deg
+#| eval: false
+
+set.seed(1111)
+
+time_pre_45 <- system.time({
+  res_pre_45 <- animate_xy(
+    X_pre_45,
+    guided_tour(
+      index_f = stringy_pp,
+      d = 2,
+      search_f = search_jellyfish,
+      n_jellies = 30,
+      max.tries = 25
+    ),
+    max_frames = 100
+  )
+})
+
+runtime_pre_45 <- unname(time_pre_45["elapsed"])
+
+best_history_pre_45 <- res_pre_45 |>
+  dplyr::filter(info == "current_best")
+
+stopifnot(nrow(best_history_pre_45) > 0)
+
+best_row_pre_45 <- best_history_pre_45 |>
+  dplyr::slice_max(index_val, n = 1, with_ties = FALSE)
+
+A_best_pre_45 <- best_row_pre_45$basis[[1]]
+best_score_pre_45 <- stringy_pp(X_pre_45 %*% A_best_pre_45)
+
+saveRDS(
+  list(
+    history = best_history_pre_45,
+    best_basis = A_best_pre_45,
+    best_score = best_score_pre_45,
+    runtime_seconds = runtime_pre_45,
+    timing = time_pre_45,
+    n_jellies = 30,
+    max_tries = 25,
+    dimensions = ncol(X_pre_45),
+    selected_vars = selected_vars_45,
+    angle_deg = 45,
+    optimizer_seed = 1111
+  ),
+  file.path(
+    results_dir,
+    "jellyfish_cubic_45deg_preprocessed4D_30j_25tries_results.rds"
+  )
+)
+
+bases_pre_45 <- best_history_pre_45$basis
+bases_gif_pre_45 <- tourr::check_dup(bases_pre_45, 0.1)
+
+gif_file_pre_45 <- file.path(
+  results_dir,
+  "jellyfish_cubic_45deg_preprocessed4D_30j_25tries.gif"
+)
+
+tourr::render_gif(
+  data = X_pre_45,
+  tour_path = tourr::planned_tour(bases_gif_pre_45),
+  display = tourr::display_xy(),
+  gif_file = gif_file_pre_45,
+  frames = 100,
+  apf = 1 / 12
+)
+```
+
+
+```{r}
+#| label: load-jellyfish-preprocessed-45deg
+#| echo: false
+
+file_pre_45 <- file.path(
+  results_dir,
+  "jellyfish_cubic_45deg_preprocessed4D_30j_25tries_results.rds"
+)
+
+gif_file_pre_45 <- file.path(
+  results_dir,
+  "jellyfish_cubic_45deg_preprocessed4D_30j_25tries.gif"
+)
+
+
+saved_pre_45 <- readRDS(file_pre_45)
+
+A_best_pre_45 <- saved_pre_45$best_basis
+best_score_pre_45 <- saved_pre_45$best_score
+runtime_pre_45 <- saved_pre_45$runtime_seconds
+```
+
+### Display the saved GIF
+
+```{r}
+#| label: gif-jellyfish-preprocessed-45deg
+#| echo: false
+#| fig-cap: "Jellyfish guided tour using x2, x7, x3 and x4 at 45°."
+#| out-width: "80%"
+
+knitr::include_graphics(gif_file_pre_45)
+```
+```{r}
+#| label: runtime-jellyfish-preprocessed-45deg
+#| echo: false
+
+knitr::kable(
+  tibble::tibble(
+    Variables = "x2, x7, x3, x4",
+    Dimensions = ncol(X_pre_45),
+    Jellies = 30,
+    `Max tries` = 25,
+    `Runtime (seconds)` = round(runtime_pre_45, 2),
+    `Best Stringy05` = round(best_score_pre_45, 4)
+  ),
+  caption = "Jellyfish optimisation using the selected variables at 45°",
+  align = "c"
+)
 ```
 
