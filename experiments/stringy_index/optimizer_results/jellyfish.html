@@ -166,7 +166,7 @@ window.Quarto = {
   <li><a href="#display-the-highest-scoring-projection-3" id="toc-display-the-highest-scoring-projection-3" class="nav-link" data-scroll-target="#display-the-highest-scoring-projection-3"><span class="header-section-number">11.3</span> Display the highest-scoring projection</a></li>
   <li><a href="#runtime-and-best-stringy05-2" id="toc-runtime-and-best-stringy05-2" class="nav-link" data-scroll-target="#runtime-and-best-stringy05-2"><span class="header-section-number">11.4</span> Runtime and best Stringy05</a></li>
   </ul></li>
-  <li><a href="#experiment-7-scagnostic-preprocessing-before-jellyfish" id="toc-experiment-7-scagnostic-preprocessing-before-jellyfish" class="nav-link" data-scroll-target="#experiment-7-scagnostic-preprocessing-before-jellyfish"><span class="header-section-number">12</span> Experiment 7: Scagnostic preprocessing before Jellyfish</a>
+  <li><a href="#experiment-7a-scagnostic-preprocessing-before-jellyfish" id="toc-experiment-7a-scagnostic-preprocessing-before-jellyfish" class="nav-link" data-scroll-target="#experiment-7a-scagnostic-preprocessing-before-jellyfish"><span class="header-section-number">12</span> Experiment 7A: Scagnostic preprocessing before Jellyfish</a>
   <ul class="collapse">
   <li><a href="#apply-scagnostic-preprocessing-to-the-10d-dataset" id="toc-apply-scagnostic-preprocessing-to-the-10d-dataset" class="nav-link" data-scroll-target="#apply-scagnostic-preprocessing-to-the-10d-dataset"><span class="header-section-number">12.1</span> Apply scagnostic preprocessing to the 10D dataset</a></li>
   <li><a href="#create-the-reduced-4d-dataset" id="toc-create-the-reduced-4d-dataset" class="nav-link" data-scroll-target="#create-the-reduced-4d-dataset"><span class="header-section-number">12.2</span> Create the reduced 4D dataset</a></li>
@@ -175,12 +175,22 @@ window.Quarto = {
   <li><a href="#display-the-best-projection" id="toc-display-the-best-projection" class="nav-link" data-scroll-target="#display-the-best-projection"><span class="header-section-number">12.5</span> Display the best projection</a></li>
   <li><a href="#runtime-and-best-stringy05-3" id="toc-runtime-and-best-stringy05-3" class="nav-link" data-scroll-target="#runtime-and-best-stringy05-3"><span class="header-section-number">12.6</span> 7. Runtime and best Stringy05</a></li>
   </ul></li>
-  <li><a href="#experiment-8-can-preprocessing-help-jellyfish-recover-the-hidden-cubic-structure-at-45" id="toc-experiment-8-can-preprocessing-help-jellyfish-recover-the-hidden-cubic-structure-at-45" class="nav-link" data-scroll-target="#experiment-8-can-preprocessing-help-jellyfish-recover-the-hidden-cubic-structure-at-45"><span class="header-section-number">13</span> Experiment 8: Can preprocessing help Jellyfish recover the hidden cubic structure at 45°?</a>
+  <li><a href="#experiment-7b-scagnostic-informed-initialisation-of-jellyfish" id="toc-experiment-7b-scagnostic-informed-initialisation-of-jellyfish" class="nav-link" data-scroll-target="#experiment-7b-scagnostic-informed-initialisation-of-jellyfish"><span class="header-section-number">13</span> <strong>Experiment 7B: Scagnostic-informed initialisation of Jellyfish</strong></a>
   <ul class="collapse">
-  <li><a href="#generate-the-hidden-cubic-dataset-at-45circ" id="toc-generate-the-hidden-cubic-dataset-at-45circ" class="nav-link" data-scroll-target="#generate-the-hidden-cubic-dataset-at-45circ"><span class="header-section-number">13.1</span> Generate the hidden cubic dataset at <span class="math inline">\(45^\circ\)</span></a></li>
-  <li><a href="#visualise-the-observed-and-known-recovery-projections" id="toc-visualise-the-observed-and-known-recovery-projections" class="nav-link" data-scroll-target="#visualise-the-observed-and-known-recovery-projections"><span class="header-section-number">13.2</span> Visualise the observed and known recovery projections</a></li>
-  <li><a href="#apply-scagnostic-preprocessing-at-45circ" id="toc-apply-scagnostic-preprocessing-at-45circ" class="nav-link" data-scroll-target="#apply-scagnostic-preprocessing-at-45circ"><span class="header-section-number">13.3</span> Apply scagnostic preprocessing at <span class="math inline">\(45^\circ\)</span></a></li>
+  <li><a href="#extract-the-initial-bases-from-preprocessing" id="toc-extract-the-initial-bases-from-preprocessing" class="nav-link" data-scroll-target="#extract-the-initial-bases-from-preprocessing"><span class="header-section-number">13.1</span> Extract the initial bases from preprocessing</a></li>
+  <li><a href="#run-jellyfish-with-scagnostic-informed-initial-bases" id="toc-run-jellyfish-with-scagnostic-informed-initial-bases" class="nav-link" data-scroll-target="#run-jellyfish-with-scagnostic-informed-initial-bases"><span class="header-section-number">13.2</span> Run Jellyfish with scagnostic-informed initial bases</a></li>
+  <li><a href="#load-the-saved-results" id="toc-load-the-saved-results" class="nav-link" data-scroll-target="#load-the-saved-results"><span class="header-section-number">13.3</span> Load the saved results</a></li>
   <li><a href="#display-the-saved-gif-3" id="toc-display-the-saved-gif-3" class="nav-link" data-scroll-target="#display-the-saved-gif-3"><span class="header-section-number">13.4</span> Display the saved GIF</a></li>
+  <li><a href="#display-the-best-projection-1" id="toc-display-the-best-projection-1" class="nav-link" data-scroll-target="#display-the-best-projection-1"><span class="header-section-number">13.5</span> Display the best projection</a></li>
+  <li><a href="#runtime-and-best-stringy05-4" id="toc-runtime-and-best-stringy05-4" class="nav-link" data-scroll-target="#runtime-and-best-stringy05-4"><span class="header-section-number">13.6</span> Runtime and best Stringy05</a></li>
+  </ul></li>
+  <li><a href="#compare-all-experiments" id="toc-compare-all-experiments" class="nav-link" data-scroll-target="#compare-all-experiments"><span class="header-section-number">14</span> Compare all experiments</a></li>
+  <li><a href="#experiment-8-can-preprocessing-help-jellyfish-recover-the-hidden-cubic-structure-at-45" id="toc-experiment-8-can-preprocessing-help-jellyfish-recover-the-hidden-cubic-structure-at-45" class="nav-link" data-scroll-target="#experiment-8-can-preprocessing-help-jellyfish-recover-the-hidden-cubic-structure-at-45"><span class="header-section-number">15</span> Experiment 8: Can preprocessing help Jellyfish recover the hidden cubic structure at 45°?</a>
+  <ul class="collapse">
+  <li><a href="#generate-the-hidden-cubic-dataset-at-45circ" id="toc-generate-the-hidden-cubic-dataset-at-45circ" class="nav-link" data-scroll-target="#generate-the-hidden-cubic-dataset-at-45circ"><span class="header-section-number">15.1</span> Generate the hidden cubic dataset at <span class="math inline">\(45^\circ\)</span></a></li>
+  <li><a href="#visualise-the-observed-and-known-recovery-projections" id="toc-visualise-the-observed-and-known-recovery-projections" class="nav-link" data-scroll-target="#visualise-the-observed-and-known-recovery-projections"><span class="header-section-number">15.2</span> Visualise the observed and known recovery projections</a></li>
+  <li><a href="#apply-scagnostic-preprocessing-at-45circ" id="toc-apply-scagnostic-preprocessing-at-45circ" class="nav-link" data-scroll-target="#apply-scagnostic-preprocessing-at-45circ"><span class="header-section-number">15.3</span> Apply scagnostic preprocessing at <span class="math inline">\(45^\circ\)</span></a></li>
+  <li><a href="#display-the-saved-gif-4" id="toc-display-the-saved-gif-4" class="nav-link" data-scroll-target="#display-the-saved-gif-4"><span class="header-section-number">15.4</span> Display the saved GIF</a></li>
   </ul></li>
   </ul>
 <div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="jellyfish.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li></ul></div></nav>
@@ -1284,8 +1294,8 @@ Figure&nbsp;12: Highest-scoring projection: 200 jellies and 200 max tries.
 </blockquote>
 </section>
 </section>
-<section id="experiment-7-scagnostic-preprocessing-before-jellyfish" class="level2" data-number="12">
-<h2 data-number="12" class="anchored" data-anchor-id="experiment-7-scagnostic-preprocessing-before-jellyfish"><span class="header-section-number">12</span> Experiment 7: Scagnostic preprocessing before Jellyfish</h2>
+<section id="experiment-7a-scagnostic-preprocessing-before-jellyfish" class="level2" data-number="12">
+<h2 data-number="12" class="anchored" data-anchor-id="experiment-7a-scagnostic-preprocessing-before-jellyfish"><span class="header-section-number">12</span> Experiment 7A: Scagnostic preprocessing before Jellyfish</h2>
 <p>We now investigate whether preprocessing can reduce the dimensionality of the search space while retaining the important structure.</p>
 <p>First, we apply <code>scag_preprocess()</code> to the original 10-dimensional dataset. In our example, the largest-gap selection identifies <code>x1</code> and <code>x2</code>, which form the highest-scoring observed variable pair.</p>
 <p>However, restricting the data to these two variables would not provide a meaningful test of dimension reduction through two-dimensional projection pursuit. Therefore, for this experiment, we additionally retain <code>x3</code> and <code>x4</code>, which are known from the simulation design to contain the complementary signal-noise mixtures.</p>
@@ -1345,7 +1355,7 @@ attr(,"class")
 </details>
 <div class="cell-output-display">
 <div class="plotly html-widget html-fill-item" id="htmlwidget-67db2e41a735bbdfcb2f" style="width:100%;height:464px;"></div>
-<script type="application/json" data-for="htmlwidget-67db2e41a735bbdfcb2f">{"x":{"visdat":{"15c71a5ea18f":["function () ","plotlyVisDat"],"15c73ac0c0cf":["function () ","data"]},"cur_data":"15c73ac0c0cf","attrs":{"15c71a5ea18f":{"x":{},"y":{},"mode":"markers","marker":{"size":7},"text":{},"hoverinfo":"text","color":{},"colors":["#0D9488","#94A3B8"],"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter"},"15c73ac0c0cf":{"x":{},"y":{},"type":"scatter","mode":"lines","line":{"color":"#64748B"},"showlegend":false,"inherit":false}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"Pairwise scagnostic scree plot","xaxis":{"domain":[0,1],"automargin":true,"title":"Ranked pair position"},"yaxis":{"domain":[0,1],"automargin":true,"title":"stringy05"},"shapes":[{"type":"line","x0":1.5,"x1":1.5,"y0":0,"y1":1,"yref":"paper","line":{"color":"red","dash":"dash"}}],"hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":[2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45],"y":[0.27877003558541946,0.25780468079942148,0.2383771430254728,0.22679239747702024,0.2265952366995731,0.20509485754238402,0.18756672793762411,0.13448328785468697,0.060298486798590366,0.032278899865932388,0.029603565710538817,0.0210366340349658,0.019248309526329162,0.012019512153402179,0.0082011925245062435,0.0055038398517003543,0.0046427871730901722,0.0014945553008692948,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"mode":"markers","marker":{"color":"rgba(148,163,184,1)","size":7,"line":{"color":"rgba(148,163,184,1)"}},"text":["Pair: x2 - x9<br>Rank: 2<br>Stringy05: 0.2788<br>Status: Not selected","Pair: x2 - x5<br>Rank: 3<br>Stringy05: 0.2578<br>Status: Not selected","Pair: x2 - x7<br>Rank: 4<br>Stringy05: 0.2384<br>Status: Not selected","Pair: x2 - x10<br>Rank: 5<br>Stringy05: 0.2268<br>Status: Not selected","Pair: x2 - x4<br>Rank: 6<br>Stringy05: 0.2266<br>Status: Not selected","Pair: x2 - x3<br>Rank: 7<br>Stringy05: 0.2051<br>Status: Not selected","Pair: x2 - x6<br>Rank: 8<br>Stringy05: 0.1876<br>Status: Not selected","Pair: x2 - x8<br>Rank: 9<br>Stringy05: 0.1345<br>Status: Not selected","Pair: x3 - x6<br>Rank: 10<br>Stringy05: 0.0603<br>Status: Not selected","Pair: x6 - x8<br>Rank: 11<br>Stringy05: 0.0323<br>Status: Not selected","Pair: x5 - x10<br>Rank: 12<br>Stringy05: 0.0296<br>Status: Not selected","Pair: x1 - x4<br>Rank: 13<br>Stringy05: 0.021<br>Status: Not selected","Pair: x3 - x4<br>Rank: 14<br>Stringy05: 0.0192<br>Status: Not selected","Pair: x4 - x10<br>Rank: 15<br>Stringy05: 0.012<br>Status: Not selected","Pair: x8 - x10<br>Rank: 16<br>Stringy05: 0.0082<br>Status: Not selected","Pair: x7 - x8<br>Rank: 17<br>Stringy05: 0.0055<br>Status: Not selected","Pair: x6 - x9<br>Rank: 18<br>Stringy05: 0.0046<br>Status: Not selected","Pair: x3 - x8<br>Rank: 19<br>Stringy05: 0.0015<br>Status: Not selected","Pair: x1 - x3<br>Rank: 20<br>Stringy05: 0<br>Status: Not selected","Pair: x1 - x5<br>Rank: 20<br>Stringy05: 0<br>Status: Not selected","Pair: x1 - x6<br>Rank: 20<br>Stringy05: 0<br>Status: Not selected","Pair: x1 - x7<br>Rank: 20<br>Stringy05: 0<br>Status: Not selected","Pair: x1 - x8<br>Rank: 20<br>Stringy05: 0<br>Status: Not selected","Pair: x1 - x9<br>Rank: 20<br>Stringy05: 0<br>Status: Not selected","Pair: x1 - x10<br>Rank: 20<br>Stringy05: 0<br>Status: Not selected","Pair: x3 - x5<br>Rank: 20<br>Stringy05: 0<br>Status: Not selected","Pair: x3 - x7<br>Rank: 20<br>Stringy05: 0<br>Status: Not selected","Pair: x3 - x9<br>Rank: 20<br>Stringy05: 0<br>Status: Not selected","Pair: x3 - x10<br>Rank: 20<br>Stringy05: 0<br>Status: Not selected","Pair: x4 - x5<br>Rank: 20<br>Stringy05: 0<br>Status: Not selected","Pair: x4 - x6<br>Rank: 20<br>Stringy05: 0<br>Status: Not selected","Pair: x4 - x7<br>Rank: 20<br>Stringy05: 0<br>Status: Not selected","Pair: x4 - x8<br>Rank: 20<br>Stringy05: 0<br>Status: Not selected","Pair: x4 - x9<br>Rank: 20<br>Stringy05: 0<br>Status: Not selected","Pair: x5 - x6<br>Rank: 20<br>Stringy05: 0<br>Status: Not selected","Pair: x5 - x7<br>Rank: 20<br>Stringy05: 0<br>Status: Not selected","Pair: x5 - x8<br>Rank: 20<br>Stringy05: 0<br>Status: Not selected","Pair: x5 - x9<br>Rank: 20<br>Stringy05: 0<br>Status: Not selected","Pair: x6 - x7<br>Rank: 20<br>Stringy05: 0<br>Status: Not selected","Pair: x6 - x10<br>Rank: 20<br>Stringy05: 0<br>Status: Not selected","Pair: x7 - x9<br>Rank: 20<br>Stringy05: 0<br>Status: Not selected","Pair: x7 - x10<br>Rank: 20<br>Stringy05: 0<br>Status: Not selected","Pair: x8 - x9<br>Rank: 20<br>Stringy05: 0<br>Status: Not selected","Pair: x9 - x10<br>Rank: 20<br>Stringy05: 0<br>Status: Not selected"],"hoverinfo":["text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text"],"type":"scatter","name":"Not selected","textfont":{"color":"rgba(148,163,184,1)"},"error_y":{"color":"rgba(148,163,184,1)"},"error_x":{"color":"rgba(148,163,184,1)"},"line":{"color":"rgba(148,163,184,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":[1],"y":[0.87928521236265089],"mode":"markers","marker":{"color":"rgba(13,148,136,1)","size":7,"line":{"color":"rgba(13,148,136,1)"}},"text":"Pair: x1 - x2<br>Rank: 1<br>Stringy05: 0.8793<br>Status: Selected","hoverinfo":"text","type":"scatter","name":"Selected","textfont":{"color":"rgba(13,148,136,1)"},"error_y":{"color":"rgba(13,148,136,1)"},"error_x":{"color":"rgba(13,148,136,1)"},"line":{"color":"rgba(13,148,136,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45],"y":[0.87928521236265089,0.27877003558541946,0.25780468079942148,0.2383771430254728,0.22679239747702024,0.2265952366995731,0.20509485754238402,0.18756672793762411,0.13448328785468697,0.060298486798590366,0.032278899865932388,0.029603565710538817,0.0210366340349658,0.019248309526329162,0.012019512153402179,0.0082011925245062435,0.0055038398517003543,0.0046427871730901722,0.0014945553008692948,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"type":"scatter","mode":"lines","line":{"color":"#64748B"},"showlegend":false,"marker":{"color":"rgba(44,160,44,1)","line":{"color":"rgba(44,160,44,1)"}},"error_y":{"color":"rgba(44,160,44,1)"},"error_x":{"color":"rgba(44,160,44,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-67db2e41a735bbdfcb2f">{"x":{"visdat":{"e09d629f861a":["function () ","plotlyVisDat"],"e09d571d478b":["function () ","data"]},"cur_data":"e09d571d478b","attrs":{"e09d629f861a":{"x":{},"y":{},"mode":"markers","marker":{"size":7},"text":{},"hoverinfo":"text","color":{},"colors":["#0D9488","#94A3B8"],"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter"},"e09d571d478b":{"x":{},"y":{},"type":"scatter","mode":"lines","line":{"color":"#64748B"},"showlegend":false,"inherit":false}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"Pairwise scagnostic scree plot","xaxis":{"domain":[0,1],"automargin":true,"title":"Ranked pair position"},"yaxis":{"domain":[0,1],"automargin":true,"title":"stringy05"},"shapes":[{"type":"line","x0":1.5,"x1":1.5,"y0":0,"y1":1,"yref":"paper","line":{"color":"red","dash":"dash"}}],"hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":[2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45],"y":[0.27877003558541946,0.25780468079942148,0.2383771430254728,0.22679239747702024,0.2265952366995731,0.20509485754238402,0.18756672793762411,0.13448328785468697,0.060298486798590366,0.032278899865932388,0.029603565710538817,0.0210366340349658,0.019248309526329162,0.012019512153402179,0.0082011925245062435,0.0055038398517003543,0.0046427871730901722,0.0014945553008692948,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"mode":"markers","marker":{"color":"rgba(148,163,184,1)","size":7,"line":{"color":"rgba(148,163,184,1)"}},"text":["Pair: x2 - x9<br>Rank: 2<br>Stringy05: 0.2788<br>Status: Not selected","Pair: x2 - x5<br>Rank: 3<br>Stringy05: 0.2578<br>Status: Not selected","Pair: x2 - x7<br>Rank: 4<br>Stringy05: 0.2384<br>Status: Not selected","Pair: x2 - x10<br>Rank: 5<br>Stringy05: 0.2268<br>Status: Not selected","Pair: x2 - x4<br>Rank: 6<br>Stringy05: 0.2266<br>Status: Not selected","Pair: x2 - x3<br>Rank: 7<br>Stringy05: 0.2051<br>Status: Not selected","Pair: x2 - x6<br>Rank: 8<br>Stringy05: 0.1876<br>Status: Not selected","Pair: x2 - x8<br>Rank: 9<br>Stringy05: 0.1345<br>Status: Not selected","Pair: x3 - x6<br>Rank: 10<br>Stringy05: 0.0603<br>Status: Not selected","Pair: x6 - x8<br>Rank: 11<br>Stringy05: 0.0323<br>Status: Not selected","Pair: x5 - x10<br>Rank: 12<br>Stringy05: 0.0296<br>Status: Not selected","Pair: x1 - x4<br>Rank: 13<br>Stringy05: 0.021<br>Status: Not selected","Pair: x3 - x4<br>Rank: 14<br>Stringy05: 0.0192<br>Status: Not selected","Pair: x4 - x10<br>Rank: 15<br>Stringy05: 0.012<br>Status: Not selected","Pair: x8 - x10<br>Rank: 16<br>Stringy05: 0.0082<br>Status: Not selected","Pair: x7 - x8<br>Rank: 17<br>Stringy05: 0.0055<br>Status: Not selected","Pair: x6 - x9<br>Rank: 18<br>Stringy05: 0.0046<br>Status: Not selected","Pair: x3 - x8<br>Rank: 19<br>Stringy05: 0.0015<br>Status: Not selected","Pair: x1 - x3<br>Rank: 20<br>Stringy05: 0<br>Status: Not selected","Pair: x1 - x5<br>Rank: 20<br>Stringy05: 0<br>Status: Not selected","Pair: x1 - x6<br>Rank: 20<br>Stringy05: 0<br>Status: Not selected","Pair: x1 - x7<br>Rank: 20<br>Stringy05: 0<br>Status: Not selected","Pair: x1 - x8<br>Rank: 20<br>Stringy05: 0<br>Status: Not selected","Pair: x1 - x9<br>Rank: 20<br>Stringy05: 0<br>Status: Not selected","Pair: x1 - x10<br>Rank: 20<br>Stringy05: 0<br>Status: Not selected","Pair: x3 - x5<br>Rank: 20<br>Stringy05: 0<br>Status: Not selected","Pair: x3 - x7<br>Rank: 20<br>Stringy05: 0<br>Status: Not selected","Pair: x3 - x9<br>Rank: 20<br>Stringy05: 0<br>Status: Not selected","Pair: x3 - x10<br>Rank: 20<br>Stringy05: 0<br>Status: Not selected","Pair: x4 - x5<br>Rank: 20<br>Stringy05: 0<br>Status: Not selected","Pair: x4 - x6<br>Rank: 20<br>Stringy05: 0<br>Status: Not selected","Pair: x4 - x7<br>Rank: 20<br>Stringy05: 0<br>Status: Not selected","Pair: x4 - x8<br>Rank: 20<br>Stringy05: 0<br>Status: Not selected","Pair: x4 - x9<br>Rank: 20<br>Stringy05: 0<br>Status: Not selected","Pair: x5 - x6<br>Rank: 20<br>Stringy05: 0<br>Status: Not selected","Pair: x5 - x7<br>Rank: 20<br>Stringy05: 0<br>Status: Not selected","Pair: x5 - x8<br>Rank: 20<br>Stringy05: 0<br>Status: Not selected","Pair: x5 - x9<br>Rank: 20<br>Stringy05: 0<br>Status: Not selected","Pair: x6 - x7<br>Rank: 20<br>Stringy05: 0<br>Status: Not selected","Pair: x6 - x10<br>Rank: 20<br>Stringy05: 0<br>Status: Not selected","Pair: x7 - x9<br>Rank: 20<br>Stringy05: 0<br>Status: Not selected","Pair: x7 - x10<br>Rank: 20<br>Stringy05: 0<br>Status: Not selected","Pair: x8 - x9<br>Rank: 20<br>Stringy05: 0<br>Status: Not selected","Pair: x9 - x10<br>Rank: 20<br>Stringy05: 0<br>Status: Not selected"],"hoverinfo":["text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text"],"type":"scatter","name":"Not selected","textfont":{"color":"rgba(148,163,184,1)"},"error_y":{"color":"rgba(148,163,184,1)"},"error_x":{"color":"rgba(148,163,184,1)"},"line":{"color":"rgba(148,163,184,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":[1],"y":[0.87928521236265089],"mode":"markers","marker":{"color":"rgba(13,148,136,1)","size":7,"line":{"color":"rgba(13,148,136,1)"}},"text":"Pair: x1 - x2<br>Rank: 1<br>Stringy05: 0.8793<br>Status: Selected","hoverinfo":"text","type":"scatter","name":"Selected","textfont":{"color":"rgba(13,148,136,1)"},"error_y":{"color":"rgba(13,148,136,1)"},"error_x":{"color":"rgba(13,148,136,1)"},"line":{"color":"rgba(13,148,136,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45],"y":[0.87928521236265089,0.27877003558541946,0.25780468079942148,0.2383771430254728,0.22679239747702024,0.2265952366995731,0.20509485754238402,0.18756672793762411,0.13448328785468697,0.060298486798590366,0.032278899865932388,0.029603565710538817,0.0210366340349658,0.019248309526329162,0.012019512153402179,0.0082011925245062435,0.0055038398517003543,0.0046427871730901722,0.0014945553008692948,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"type":"scatter","mode":"lines","line":{"color":"#64748B"},"showlegend":false,"marker":{"color":"rgba(44,160,44,1)","line":{"color":"rgba(44,160,44,1)"}},"error_y":{"color":"rgba(44,160,44,1)"},"error_x":{"color":"rgba(44,160,44,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 </section>
@@ -1530,6 +1540,228 @@ Figure&nbsp;14: Best projection found in the reduced 4D dataset.
 </table>
 </div>
 </div>
+</section>
+</section>
+<section id="experiment-7b-scagnostic-informed-initialisation-of-jellyfish" class="level2" data-number="13">
+<h2 data-number="13" class="anchored" data-anchor-id="experiment-7b-scagnostic-informed-initialisation-of-jellyfish"><span class="header-section-number">13</span> <strong>Experiment 7B: Scagnostic-informed initialisation of Jellyfish</strong></h2>
+<p>In the previous experiment, scagnostic preprocessing was used to reduce the dimensionality of the search space before applying Jellyfish. However, variable selection may remove variables that contribute to interesting linear combinations, even when their individual pairwise scagnostic scores are low.</p>
+<p>We now explore an alternative approach in which preprocessing is used to initialise the Jellyfish population rather than reduce the dimensionality of the dataset.</p>
+<p>The initial projection bases obtained from <code>scag_preprocess()</code> are included in the Jellyfish population, while the remaining bases are generated randomly. All ten original variables are retained throughout the optimisation.</p>
+<p>We use 30 jellies and <code>max.tries = 25</code>, keeping the remaining settings unchanged. The aim is to investigate whether scagnostic-informed initialisation improves optimisation performance without restricting the search space.</p>
+<section id="extract-the-initial-bases-from-preprocessing" class="level3" data-number="13.1">
+<h3 data-number="13.1" class="anchored" data-anchor-id="extract-the-initial-bases-from-preprocessing"><span class="header-section-number">13.1</span> Extract the initial bases from preprocessing</h3>
+<p>We reuse <code>preprocess_result</code> from Experiment 7A.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>preprocess_result <span class="ot">&lt;-</span> <span class="fu">scag_preprocess</span>(</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  X,</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">scag =</span> <span class="st">"stringy05"</span>,</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">rescale =</span> <span class="cn">TRUE</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>initial_bases <span class="ot">&lt;-</span> preprocess_result<span class="sc">$</span>initial_bases</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<p>Each matrix has 10 rows and 2 columns, corresponding to an orthonormal projection basis in the original 10-dimensional space.</p>
+</section>
+<section id="run-jellyfish-with-scagnostic-informed-initial-bases" class="level3" data-number="13.2">
+<h3 data-number="13.2" class="anchored" data-anchor-id="run-jellyfish-with-scagnostic-informed-initial-bases"><span class="header-section-number">13.2</span> Run Jellyfish with scagnostic-informed initial bases</h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>initial_bases <span class="ot">&lt;-</span> preprocess_result<span class="sc">$</span>initial_bases</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1111</span>)</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>time_informed_30 <span class="ot">&lt;-</span> <span class="fu">system.time</span>({</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>  res_informed_30 <span class="ot">&lt;-</span> <span class="fu">animate_xy</span>(</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>    X,</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">guided_tour</span>(</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>      <span class="at">index_f =</span> stringy_pp,</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>      <span class="at">d =</span> <span class="dv">2</span>,</span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>      <span class="at">search_f =</span> search_jellyfish,</span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>      <span class="at">n_jellies =</span> <span class="dv">30</span>,</span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>      <span class="at">max.tries =</span> <span class="dv">25</span>,</span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>      <span class="at">initial_bases =</span> initial_bases</span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">max_frames =</span> <span class="dv">100</span></span>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a>runtime_informed_30 <span class="ot">&lt;-</span> <span class="fu">unname</span>(time_informed_30[<span class="st">"elapsed"</span>])</span>
+<span id="cb22-21"><a href="#cb22-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-22"><a href="#cb22-22" aria-hidden="true" tabindex="-1"></a>best_history_informed_30 <span class="ot">&lt;-</span> res_informed_30 <span class="sc">|&gt;</span></span>
+<span id="cb22-23"><a href="#cb22-23" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(info <span class="sc">==</span> <span class="st">"current_best"</span>)</span>
+<span id="cb22-24"><a href="#cb22-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-25"><a href="#cb22-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-26"><a href="#cb22-26" aria-hidden="true" tabindex="-1"></a>best_row_informed_30 <span class="ot">&lt;-</span> best_history_informed_30 <span class="sc">|&gt;</span></span>
+<span id="cb22-27"><a href="#cb22-27" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">slice_max</span>(index_val, <span class="at">n =</span> <span class="dv">1</span>, <span class="at">with_ties =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb22-28"><a href="#cb22-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-29"><a href="#cb22-29" aria-hidden="true" tabindex="-1"></a>A_best_informed_30 <span class="ot">&lt;-</span> best_row_informed_30<span class="sc">$</span>basis[[<span class="dv">1</span>]]</span>
+<span id="cb22-30"><a href="#cb22-30" aria-hidden="true" tabindex="-1"></a>best_score_informed_30 <span class="ot">&lt;-</span> <span class="fu">stringy_pp</span>(X <span class="sc">%*%</span> A_best_informed_30)</span>
+<span id="cb22-31"><a href="#cb22-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-32"><a href="#cb22-32" aria-hidden="true" tabindex="-1"></a>initial_best_score_30 <span class="ot">&lt;-</span> <span class="fu">max</span>(preprocess_result<span class="sc">$</span>top_pairs<span class="sc">$</span>value)</span>
+<span id="cb22-33"><a href="#cb22-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-34"><a href="#cb22-34" aria-hidden="true" tabindex="-1"></a><span class="co"># Save results</span></span>
+<span id="cb22-35"><a href="#cb22-35" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(</span>
+<span id="cb22-36"><a href="#cb22-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(</span>
+<span id="cb22-37"><a href="#cb22-37" aria-hidden="true" tabindex="-1"></a>    <span class="at">history =</span> best_history_informed_30,</span>
+<span id="cb22-38"><a href="#cb22-38" aria-hidden="true" tabindex="-1"></a>    <span class="at">best_basis =</span> A_best_informed_30,</span>
+<span id="cb22-39"><a href="#cb22-39" aria-hidden="true" tabindex="-1"></a>    <span class="at">best_score =</span> best_score_informed_30,</span>
+<span id="cb22-40"><a href="#cb22-40" aria-hidden="true" tabindex="-1"></a>    <span class="at">initial_best_score =</span> initial_best_score_30,</span>
+<span id="cb22-41"><a href="#cb22-41" aria-hidden="true" tabindex="-1"></a>    <span class="at">initial_bases =</span> initial_bases,</span>
+<span id="cb22-42"><a href="#cb22-42" aria-hidden="true" tabindex="-1"></a>    <span class="at">runtime_seconds =</span> runtime_informed_30,</span>
+<span id="cb22-43"><a href="#cb22-43" aria-hidden="true" tabindex="-1"></a>    <span class="at">timing =</span> time_informed_30,</span>
+<span id="cb22-44"><a href="#cb22-44" aria-hidden="true" tabindex="-1"></a>    <span class="at">n_jellies =</span> <span class="dv">30</span>,</span>
+<span id="cb22-45"><a href="#cb22-45" aria-hidden="true" tabindex="-1"></a>    <span class="at">n_informed =</span> <span class="fu">length</span>(initial_bases),</span>
+<span id="cb22-46"><a href="#cb22-46" aria-hidden="true" tabindex="-1"></a>    <span class="at">n_random =</span> <span class="dv">30</span> <span class="sc">-</span> <span class="fu">length</span>(initial_bases),</span>
+<span id="cb22-47"><a href="#cb22-47" aria-hidden="true" tabindex="-1"></a>    <span class="at">max_tries =</span> <span class="dv">25</span>,</span>
+<span id="cb22-48"><a href="#cb22-48" aria-hidden="true" tabindex="-1"></a>    <span class="at">dimensions =</span> <span class="fu">ncol</span>(X),</span>
+<span id="cb22-49"><a href="#cb22-49" aria-hidden="true" tabindex="-1"></a>    <span class="at">angle_deg =</span> degrees,</span>
+<span id="cb22-50"><a href="#cb22-50" aria-hidden="true" tabindex="-1"></a>    <span class="at">optimizer_seed =</span> <span class="dv">1111</span></span>
+<span id="cb22-51"><a href="#cb22-51" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb22-52"><a href="#cb22-52" aria-hidden="true" tabindex="-1"></a>  <span class="fu">file.path</span>(</span>
+<span id="cb22-53"><a href="#cb22-53" aria-hidden="true" tabindex="-1"></a>    results_dir,</span>
+<span id="cb22-54"><a href="#cb22-54" aria-hidden="true" tabindex="-1"></a>    <span class="st">"jellyfish_cubic_5deg_10D_informed_30j_25tries_results.rds"</span></span>
+<span id="cb22-55"><a href="#cb22-55" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb22-56"><a href="#cb22-56" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb22-57"><a href="#cb22-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-58"><a href="#cb22-58" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate and save GIF</span></span>
+<span id="cb22-59"><a href="#cb22-59" aria-hidden="true" tabindex="-1"></a>bases_informed_30 <span class="ot">&lt;-</span> best_history_informed_30<span class="sc">$</span>basis</span>
+<span id="cb22-60"><a href="#cb22-60" aria-hidden="true" tabindex="-1"></a>bases_gif_informed_30 <span class="ot">&lt;-</span> tourr<span class="sc">::</span><span class="fu">check_dup</span>(bases_informed_30, <span class="fl">0.1</span>)</span>
+<span id="cb22-61"><a href="#cb22-61" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-62"><a href="#cb22-62" aria-hidden="true" tabindex="-1"></a>gif_file_informed_30 <span class="ot">&lt;-</span> <span class="fu">file.path</span>(</span>
+<span id="cb22-63"><a href="#cb22-63" aria-hidden="true" tabindex="-1"></a>  results_dir,</span>
+<span id="cb22-64"><a href="#cb22-64" aria-hidden="true" tabindex="-1"></a>  <span class="st">"jellyfish_cubic_5deg_10D_informed_30j_25tries.gif"</span></span>
+<span id="cb22-65"><a href="#cb22-65" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb22-66"><a href="#cb22-66" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-67"><a href="#cb22-67" aria-hidden="true" tabindex="-1"></a>tourr<span class="sc">::</span><span class="fu">render_gif</span>(</span>
+<span id="cb22-68"><a href="#cb22-68" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> X,</span>
+<span id="cb22-69"><a href="#cb22-69" aria-hidden="true" tabindex="-1"></a>    <span class="at">tour_path =</span> tourr<span class="sc">::</span><span class="fu">planned_tour</span>(bases_gif_informed_30),</span>
+<span id="cb22-70"><a href="#cb22-70" aria-hidden="true" tabindex="-1"></a>    <span class="at">display =</span> tourr<span class="sc">::</span><span class="fu">display_xy</span>(),</span>
+<span id="cb22-71"><a href="#cb22-71" aria-hidden="true" tabindex="-1"></a>    <span class="at">gif_file =</span> gif_file_informed_30,</span>
+<span id="cb22-72"><a href="#cb22-72" aria-hidden="true" tabindex="-1"></a>    <span class="at">frames =</span> <span class="dv">100</span>,</span>
+<span id="cb22-73"><a href="#cb22-73" aria-hidden="true" tabindex="-1"></a>    <span class="at">apf =</span> <span class="dv">1</span> <span class="sc">/</span> <span class="dv">12</span></span>
+<span id="cb22-74"><a href="#cb22-74" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+</section>
+<section id="load-the-saved-results" class="level3" data-number="13.3">
+<h3 data-number="13.3" class="anchored" data-anchor-id="load-the-saved-results"><span class="header-section-number">13.3</span> Load the saved results</h3>
+</section>
+<section id="display-the-saved-gif-3" class="level3" data-number="13.4">
+<h3 data-number="13.4" class="anchored" data-anchor-id="display-the-saved-gif-3"><span class="header-section-number">13.4</span> Display the saved GIF</h3>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-jellyfish-informed-gif-5deg" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-jellyfish-informed-gif-5deg-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="jellyfish_cubic_5deg_10D_informed_30j_25tries.gif" class="img-fluid figure-img" style="width:80.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-jellyfish-informed-gif-5deg-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;15: Jellyfish guided tour with scagnostic-informed initialisation.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="display-the-best-projection-1" class="level3" data-number="13.5">
+<h3 data-number="13.5" class="anchored" data-anchor-id="display-the-best-projection-1"><span class="header-section-number">13.5</span> Display the best projection</h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>Z_best_informed_30 <span class="ot">&lt;-</span> X <span class="sc">%*%</span> A_best_informed_30</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tibble</span>(</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> Z_best_informed_30[, <span class="dv">1</span>],</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> Z_best_informed_30[, <span class="dv">2</span>]</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(x, y)</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span></span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(</span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">colour =</span> <span class="st">"#2679A8"</span>,</span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">alpha =</span> <span class="fl">0.7</span>,</span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">size =</span> <span class="fl">0.7</span></span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_equal</span>() <span class="sc">+</span></span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Best projection — 10D, informed initialisation"</span>,</span>
+<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="fu">paste0</span>(</span>
+<span id="cb23-19"><a href="#cb23-19" aria-hidden="true" tabindex="-1"></a>      <span class="st">"Stringy05 = "</span>, <span class="fu">round</span>(best_score_informed_30, <span class="dv">4</span>)</span>
+<span id="cb23-20"><a href="#cb23-20" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb23-21"><a href="#cb23-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Projection 1"</span>,</span>
+<span id="cb23-22"><a href="#cb23-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Projection 2"</span></span>
+<span id="cb23-23"><a href="#cb23-23" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb23-24"><a href="#cb23-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">aspect.ratio =</span> <span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div id="fig-jellyfish-best-informed-5deg" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-jellyfish-best-informed-5deg-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="jellyfish_files/figure-html/fig-jellyfish-best-informed-5deg-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-jellyfish-best-informed-5deg-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;16: Best projection found using scagnostic-informed initialisation.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="runtime-and-best-stringy05-4" class="level3" data-number="13.6">
+<h3 data-number="13.6" class="anchored" data-anchor-id="runtime-and-best-stringy05-4"><span class="header-section-number">13.6</span> Runtime and best Stringy05</h3>
+<p>For this experiment, I would also report the <strong>best initial Stringy05 value</strong>. This is important because we want to distinguish what preprocessing already found from what Jellyfish subsequently discovered.</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Jellyfish optimisation with scagnostic-informed initialisation</caption>
+<colgroup>
+<col style="width: 9%">
+<col style="width: 6%">
+<col style="width: 12%">
+<col style="width: 10%">
+<col style="width: 8%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 12%">
+<col style="width: 10%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Dimensions</th>
+<th style="text-align: center;">Jellies</th>
+<th style="text-align: center;">Informed bases</th>
+<th style="text-align: center;">Random bases</th>
+<th style="text-align: center;">Max tries</th>
+<th style="text-align: center;">Runtime (seconds)</th>
+<th style="text-align: center;">Initial Stringy05</th>
+<th style="text-align: center;">Best Stringy05</th>
+<th style="text-align: center;">Improvement</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">10</td>
+<td style="text-align: center;">30</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">29</td>
+<td style="text-align: center;">25</td>
+<td style="text-align: center;">26.62</td>
+<td style="text-align: center;">0.8793</td>
+<td style="text-align: center;">0.9196</td>
+<td style="text-align: center;">0.0403</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+</section>
+<section id="compare-all-experiments" class="level2" data-number="14">
+<h2 data-number="14" class="anchored" data-anchor-id="compare-all-experiments"><span class="header-section-number">14</span> Compare all experiments</h2>
 <div class="cell">
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
@@ -1619,65 +1851,64 @@ Figure&nbsp;14: Best projection found in the reduced 4D dataset.
 </div>
 </div>
 </section>
-</section>
-<section id="experiment-8-can-preprocessing-help-jellyfish-recover-the-hidden-cubic-structure-at-45" class="level2" data-number="13">
-<h2 data-number="13" class="anchored" data-anchor-id="experiment-8-can-preprocessing-help-jellyfish-recover-the-hidden-cubic-structure-at-45"><span class="header-section-number">13</span> Experiment 8: Can preprocessing help Jellyfish recover the hidden cubic structure at 45°?</h2>
+<section id="experiment-8-can-preprocessing-help-jellyfish-recover-the-hidden-cubic-structure-at-45" class="level2" data-number="15">
+<h2 data-number="15" class="anchored" data-anchor-id="experiment-8-can-preprocessing-help-jellyfish-recover-the-hidden-cubic-structure-at-45"><span class="header-section-number">15</span> Experiment 8: Can preprocessing help Jellyfish recover the hidden cubic structure at 45°?</h2>
 <p>In the previous experiments, we investigated Jellyfish’s ability to recover the hidden cubic structure at a rotation angle of <span class="math inline">\(5^\circ\)</span> , where the signal was strongly represented in <code>x1</code> and <code>x2</code>. We observed that increasing the population size and maximum search attempts did not consistently improve optimisation performance. We also introduced scagnostic-based preprocessing to reduce the search space.</p>
 <p>We now increase the rotation angle to <span class="math inline">\(45^\circ\)</span>, where the signal and noise have equal coefficient magnitudes:</p>
 <p><span class="math display">\[ \cos(45^\circ)=\sin(45^\circ)=\frac{1}{\sqrt{2}}\approx0.7071.\]</span></p>
 <p>We investigate whether <code>scag_preprocess()</code> can still identify interesting variable pairs and whether reducing the search space improves Jellyfish’s performance.</p>
-<section id="generate-the-hidden-cubic-dataset-at-45circ" class="level3" data-number="13.1">
-<h3 data-number="13.1" class="anchored" data-anchor-id="generate-the-hidden-cubic-dataset-at-45circ"><span class="header-section-number">13.1</span> Generate the hidden cubic dataset at <span class="math inline">\(45^\circ\)</span></h3>
+<section id="generate-the-hidden-cubic-dataset-at-45circ" class="level3" data-number="15.1">
+<h3 data-number="15.1" class="anchored" data-anchor-id="generate-the-hidden-cubic-dataset-at-45circ"><span class="header-section-number">15.1</span> Generate the hidden cubic dataset at <span class="math inline">\(45^\circ\)</span></h3>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">500</span></span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="dv">10</span></span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>degrees_45 <span class="ot">&lt;-</span> <span class="dv">45</span></span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>theta_45 <span class="ot">&lt;-</span> degrees_45 <span class="sc">*</span> pi <span class="sc">/</span> <span class="dv">180</span></span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>X_45 <span class="ot">&lt;-</span> bilbyr<span class="sc">::</span><span class="fu">gen_hidden_stringy</span>(</span>
-<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">n =</span> n,</span>
-<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">p =</span> p,</span>
-<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">pattern =</span> <span class="st">"cubic"</span>,</span>
-<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">theta =</span> theta_45,</span>
-<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">seed =</span> <span class="dv">918</span></span>
-<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
-<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.matrix</span>()</span>
-<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(X_45) <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"x"</span>, <span class="fu">seq_len</span>(p))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">500</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="dv">10</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>degrees_45 <span class="ot">&lt;-</span> <span class="dv">45</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>theta_45 <span class="ot">&lt;-</span> degrees_45 <span class="sc">*</span> pi <span class="sc">/</span> <span class="dv">180</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>X_45 <span class="ot">&lt;-</span> bilbyr<span class="sc">::</span><span class="fu">gen_hidden_stringy</span>(</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">n =</span> n,</span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">p =</span> p,</span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">pattern =</span> <span class="st">"cubic"</span>,</span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">theta =</span> theta_45,</span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">seed =</span> <span class="dv">918</span></span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.matrix</span>()</span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(X_45) <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"x"</span>, <span class="fu">seq_len</span>(p))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 </section>
-<section id="visualise-the-observed-and-known-recovery-projections" class="level3" data-number="13.2">
-<h3 data-number="13.2" class="anchored" data-anchor-id="visualise-the-observed-and-known-recovery-projections"><span class="header-section-number">13.2</span> Visualise the observed and known recovery projections</h3>
+<section id="visualise-the-observed-and-known-recovery-projections" class="level3" data-number="15.2">
+<h3 data-number="15.2" class="anchored" data-anchor-id="visualise-the-observed-and-known-recovery-projections"><span class="header-section-number">15.2</span> Visualise the observed and known recovery projections</h3>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>A_true_45 <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow =</span> p, <span class="at">ncol =</span> <span class="dv">2</span>)</span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>A_true_45[<span class="dv">1</span>, <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="fu">cos</span>(theta_45)</span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>A_true_45[<span class="dv">3</span>, <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="sc">-</span><span class="fu">sin</span>(theta_45)</span>
-<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>A_true_45[<span class="dv">2</span>, <span class="dv">2</span>] <span class="ot">&lt;-</span> <span class="fu">cos</span>(theta_45)</span>
-<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>A_true_45[<span class="dv">4</span>, <span class="dv">2</span>] <span class="ot">&lt;-</span> <span class="sc">-</span><span class="fu">sin</span>(theta_45)</span>
-<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>Z_true_45 <span class="ot">&lt;-</span> X_45 <span class="sc">%*%</span> A_true_45</span>
-<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>Z_observed_45 <span class="ot">&lt;-</span> X_45[, <span class="fu">c</span>(<span class="st">"x1"</span>, <span class="st">"x2"</span>), drop <span class="ot">=</span> <span class="cn">FALSE</span>]</span>
-<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>ground_truth_score_45 <span class="ot">&lt;-</span> <span class="fu">stringy_pp</span>(Z_true_45)</span>
-<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>observed_score_45 <span class="ot">&lt;-</span> <span class="fu">stringy_pp</span>(Z_observed_45)</span>
-<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
-<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a>  tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
-<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">View =</span> <span class="fu">c</span>(<span class="st">"Observed (x1, x2)"</span>, <span class="st">"Known recovery projection"</span>),</span>
-<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">Stringy05 =</span> <span class="fu">round</span>(</span>
-<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a>      <span class="fu">c</span>(observed_score_45, ground_truth_score_45), <span class="dv">4</span></span>
-<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb22-21"><a href="#cb22-21" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb22-22"><a href="#cb22-22" aria-hidden="true" tabindex="-1"></a>  <span class="at">caption =</span> <span class="st">"Observed and known recovery Stringy05 values at 45°"</span>,</span>
-<span id="cb22-23"><a href="#cb22-23" aria-hidden="true" tabindex="-1"></a>  <span class="at">align =</span> <span class="st">"c"</span></span>
-<span id="cb22-24"><a href="#cb22-24" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>A_true_45 <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">nrow =</span> p, <span class="at">ncol =</span> <span class="dv">2</span>)</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>A_true_45[<span class="dv">1</span>, <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="fu">cos</span>(theta_45)</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>A_true_45[<span class="dv">3</span>, <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="sc">-</span><span class="fu">sin</span>(theta_45)</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>A_true_45[<span class="dv">2</span>, <span class="dv">2</span>] <span class="ot">&lt;-</span> <span class="fu">cos</span>(theta_45)</span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>A_true_45[<span class="dv">4</span>, <span class="dv">2</span>] <span class="ot">&lt;-</span> <span class="sc">-</span><span class="fu">sin</span>(theta_45)</span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>Z_true_45 <span class="ot">&lt;-</span> X_45 <span class="sc">%*%</span> A_true_45</span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>Z_observed_45 <span class="ot">&lt;-</span> X_45[, <span class="fu">c</span>(<span class="st">"x1"</span>, <span class="st">"x2"</span>), drop <span class="ot">=</span> <span class="cn">FALSE</span>]</span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>ground_truth_score_45 <span class="ot">&lt;-</span> <span class="fu">stringy_pp</span>(Z_true_45)</span>
+<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a>observed_score_45 <span class="ot">&lt;-</span> <span class="fu">stringy_pp</span>(Z_observed_45)</span>
+<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
+<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a>  tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
+<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">View =</span> <span class="fu">c</span>(<span class="st">"Observed (x1, x2)"</span>, <span class="st">"Known recovery projection"</span>),</span>
+<span id="cb25-18"><a href="#cb25-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">Stringy05 =</span> <span class="fu">round</span>(</span>
+<span id="cb25-19"><a href="#cb25-19" aria-hidden="true" tabindex="-1"></a>      <span class="fu">c</span>(observed_score_45, ground_truth_score_45), <span class="dv">4</span></span>
+<span id="cb25-20"><a href="#cb25-20" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb25-21"><a href="#cb25-21" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb25-22"><a href="#cb25-22" aria-hidden="true" tabindex="-1"></a>  <span class="at">caption =</span> <span class="st">"Observed and known recovery Stringy05 values at 45°"</span>,</span>
+<span id="cb25-23"><a href="#cb25-23" aria-hidden="true" tabindex="-1"></a>  <span class="at">align =</span> <span class="st">"c"</span></span>
+<span id="cb25-24"><a href="#cb25-24" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
@@ -1705,26 +1936,26 @@ Figure&nbsp;14: Best projection found in the reduced 4D dataset.
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">bind_rows</span>(</span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> Z_observed_45[, <span class="dv">1</span>],</span>
-<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> Z_observed_45[, <span class="dv">2</span>],</span>
-<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">view =</span> <span class="st">"Observed (x1, x2)"</span></span>
-<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>  tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
-<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> Z_true_45[, <span class="dv">1</span>],</span>
-<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> Z_true_45[, <span class="dv">2</span>],</span>
-<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">view =</span> <span class="st">"Known recovery"</span></span>
-<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
-<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">ggplot</span>(ggplot2<span class="sc">::</span><span class="fu">aes</span>(x, y)) <span class="sc">+</span></span>
-<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_point</span>(</span>
-<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">size =</span> <span class="fl">0.7</span>, <span class="at">alpha =</span> <span class="fl">0.65</span>, <span class="at">colour =</span> <span class="st">"#2679A8"</span></span>
-<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">facet_wrap</span>(<span class="sc">~</span>view, <span class="at">nrow =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">coord_equal</span>() <span class="sc">+</span></span>
-<span id="cb23-19"><a href="#cb23-19" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme_bw</span>() <span class="sc">+</span></span>
-<span id="cb23-20"><a href="#cb23-20" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme</span>(<span class="at">aspect.ratio =</span> <span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">bind_rows</span>(</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> Z_observed_45[, <span class="dv">1</span>],</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> Z_observed_45[, <span class="dv">2</span>],</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">view =</span> <span class="st">"Observed (x1, x2)"</span></span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>  tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> Z_true_45[, <span class="dv">1</span>],</span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> Z_true_45[, <span class="dv">2</span>],</span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">view =</span> <span class="st">"Known recovery"</span></span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">ggplot</span>(ggplot2<span class="sc">::</span><span class="fu">aes</span>(x, y)) <span class="sc">+</span></span>
+<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_point</span>(</span>
+<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">size =</span> <span class="fl">0.7</span>, <span class="at">alpha =</span> <span class="fl">0.65</span>, <span class="at">colour =</span> <span class="st">"#2679A8"</span></span>
+<span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb26-17"><a href="#cb26-17" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">facet_wrap</span>(<span class="sc">~</span>view, <span class="at">nrow =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb26-18"><a href="#cb26-18" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">coord_equal</span>() <span class="sc">+</span></span>
+<span id="cb26-19"><a href="#cb26-19" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb26-20"><a href="#cb26-20" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme</span>(<span class="at">aspect.ratio =</span> <span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
 <div id="fig-reference-45deg" class="quarto-float quarto-figure quarto-figure-center anchored" width="960">
@@ -1733,26 +1964,26 @@ Figure&nbsp;14: Best projection found in the reduced 4D dataset.
 <img src="jellyfish_files/figure-html/fig-reference-45deg-1.png" id="fig-reference-45deg" class="img-fluid figure-img" width="960">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig quarto-uncaptioned" id="fig-reference-45deg-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;15
+Figure&nbsp;17
 </figcaption>
 </figure>
 </div>
 </div>
 </div>
 </section>
-<section id="apply-scagnostic-preprocessing-at-45circ" class="level3" data-number="13.3">
-<h3 data-number="13.3" class="anchored" data-anchor-id="apply-scagnostic-preprocessing-at-45circ"><span class="header-section-number">13.3</span> Apply scagnostic preprocessing at <span class="math inline">\(45^\circ\)</span></h3>
+<section id="apply-scagnostic-preprocessing-at-45circ" class="level3" data-number="15.3">
+<h3 data-number="15.3" class="anchored" data-anchor-id="apply-scagnostic-preprocessing-at-45circ"><span class="header-section-number">15.3</span> Apply scagnostic preprocessing at <span class="math inline">\(45^\circ\)</span></h3>
 <p>We now test whether <code>scag_preprocess()</code> can still identify the important variables when the signal and noise are equally mixed.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>preprocess_45 <span class="ot">&lt;-</span> <span class="fu">scag_preprocess</span>(</span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  X_45,</span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">scag =</span> <span class="st">"stringy05"</span>,</span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">rescale =</span> <span class="cn">TRUE</span></span>
-<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>preprocess_45</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>preprocess_45 <span class="ot">&lt;-</span> <span class="fu">scag_preprocess</span>(</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  X_45,</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">scag =</span> <span class="st">"stringy05"</span>,</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">rescale =</span> <span class="cn">TRUE</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>preprocess_45</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>$pair_scores
@@ -1791,95 +2022,95 @@ attr(,"class")
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_scag_scree</span>(preprocess_45)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_scag_scree</span>(preprocess_45)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
 <div class="plotly html-widget html-fill-item" id="htmlwidget-3bb912dbd05b7f4679d3" style="width:100%;height:464px;"></div>
-<script type="application/json" data-for="htmlwidget-3bb912dbd05b7f4679d3">{"x":{"visdat":{"15c75186a03f":["function () ","plotlyVisDat"],"15c75d82b1e9":["function () ","data"]},"cur_data":"15c75d82b1e9","attrs":{"15c75186a03f":{"x":{},"y":{},"mode":"markers","marker":{"size":7},"text":{},"hoverinfo":"text","color":{},"colors":["#0D9488","#94A3B8"],"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter"},"15c75d82b1e9":{"x":{},"y":{},"type":"scatter","mode":"lines","line":{"color":"#64748B"},"showlegend":false,"inherit":false}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"Pairwise scagnostic scree plot","xaxis":{"domain":[0,1],"automargin":true,"title":"Ranked pair position"},"yaxis":{"domain":[0,1],"automargin":true,"title":"stringy05"},"shapes":[{"type":"line","x0":1.5,"x1":1.5,"y0":0,"y1":1,"yref":"paper","line":{"color":"red","dash":"dash"}}],"hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":[2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45],"y":[0.1111210305223328,0.10401059344888559,0.097304702471033913,0.081653827397348958,0.079027858528691416,0.069581274670630078,0.067641771279547014,0.062329721571386366,0.053914795965204175,0.049560075962322196,0.032278899865932388,0.029603565710538817,0.028452388680468954,0.018835462126228004,0.016450168378608746,0.0099670845392454879,0.0082011925245062435,0.0066998992456607865,0.0055038398517003543,0.0046427871730901722,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"mode":"markers","marker":{"color":"rgba(148,163,184,1)","size":7,"line":{"color":"rgba(148,163,184,1)"}},"text":["Pair: x3 - x4<br>Rank: 2<br>Stringy05: 0.1111<br>Status: Not selected","Pair: x4 - x8<br>Rank: 3<br>Stringy05: 0.104<br>Status: Not selected","Pair: x2 - x6<br>Rank: 4<br>Stringy05: 0.0973<br>Status: Not selected","Pair: x4 - x6<br>Rank: 5<br>Stringy05: 0.0817<br>Status: Not selected","Pair: x4 - x10<br>Rank: 6<br>Stringy05: 0.079<br>Status: Not selected","Pair: x1 - x4<br>Rank: 7<br>Stringy05: 0.0696<br>Status: Not selected","Pair: x2 - x4<br>Rank: 8<br>Stringy05: 0.0676<br>Status: Not selected","Pair: x4 - x7<br>Rank: 9<br>Stringy05: 0.0623<br>Status: Not selected","Pair: x4 - x9<br>Rank: 10<br>Stringy05: 0.0539<br>Status: Not selected","Pair: x1 - x2<br>Rank: 11<br>Stringy05: 0.0496<br>Status: Not selected","Pair: x6 - x8<br>Rank: 12<br>Stringy05: 0.0323<br>Status: Not selected","Pair: x5 - x10<br>Rank: 13<br>Stringy05: 0.0296<br>Status: Not selected","Pair: x2 - x3<br>Rank: 14<br>Stringy05: 0.0285<br>Status: Not selected","Pair: x2 - x10<br>Rank: 15<br>Stringy05: 0.0188<br>Status: Not selected","Pair: x2 - x9<br>Rank: 16<br>Stringy05: 0.0165<br>Status: Not selected","Pair: x2 - x8<br>Rank: 17<br>Stringy05: 0.01<br>Status: Not selected","Pair: x8 - x10<br>Rank: 18<br>Stringy05: 0.0082<br>Status: Not selected","Pair: x2 - x5<br>Rank: 19<br>Stringy05: 0.0067<br>Status: Not selected","Pair: x7 - x8<br>Rank: 20<br>Stringy05: 0.0055<br>Status: Not selected","Pair: x6 - x9<br>Rank: 21<br>Stringy05: 0.0046<br>Status: Not selected","Pair: x1 - x3<br>Rank: 22<br>Stringy05: 0<br>Status: Not selected","Pair: x1 - x5<br>Rank: 22<br>Stringy05: 0<br>Status: Not selected","Pair: x1 - x6<br>Rank: 22<br>Stringy05: 0<br>Status: Not selected","Pair: x1 - x7<br>Rank: 22<br>Stringy05: 0<br>Status: Not selected","Pair: x1 - x8<br>Rank: 22<br>Stringy05: 0<br>Status: Not selected","Pair: x1 - x9<br>Rank: 22<br>Stringy05: 0<br>Status: Not selected","Pair: x1 - x10<br>Rank: 22<br>Stringy05: 0<br>Status: Not selected","Pair: x3 - x5<br>Rank: 22<br>Stringy05: 0<br>Status: Not selected","Pair: x3 - x6<br>Rank: 22<br>Stringy05: 0<br>Status: Not selected","Pair: x3 - x7<br>Rank: 22<br>Stringy05: 0<br>Status: Not selected","Pair: x3 - x8<br>Rank: 22<br>Stringy05: 0<br>Status: Not selected","Pair: x3 - x9<br>Rank: 22<br>Stringy05: 0<br>Status: Not selected","Pair: x3 - x10<br>Rank: 22<br>Stringy05: 0<br>Status: Not selected","Pair: x4 - x5<br>Rank: 22<br>Stringy05: 0<br>Status: Not selected","Pair: x5 - x6<br>Rank: 22<br>Stringy05: 0<br>Status: Not selected","Pair: x5 - x7<br>Rank: 22<br>Stringy05: 0<br>Status: Not selected","Pair: x5 - x8<br>Rank: 22<br>Stringy05: 0<br>Status: Not selected","Pair: x5 - x9<br>Rank: 22<br>Stringy05: 0<br>Status: Not selected","Pair: x6 - x7<br>Rank: 22<br>Stringy05: 0<br>Status: Not selected","Pair: x6 - x10<br>Rank: 22<br>Stringy05: 0<br>Status: Not selected","Pair: x7 - x9<br>Rank: 22<br>Stringy05: 0<br>Status: Not selected","Pair: x7 - x10<br>Rank: 22<br>Stringy05: 0<br>Status: Not selected","Pair: x8 - x9<br>Rank: 22<br>Stringy05: 0<br>Status: Not selected","Pair: x9 - x10<br>Rank: 22<br>Stringy05: 0<br>Status: Not selected"],"hoverinfo":["text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text"],"type":"scatter","name":"Not selected","textfont":{"color":"rgba(148,163,184,1)"},"error_y":{"color":"rgba(148,163,184,1)"},"error_x":{"color":"rgba(148,163,184,1)"},"line":{"color":"rgba(148,163,184,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":[1],"y":[0.13751245386729696],"mode":"markers","marker":{"color":"rgba(13,148,136,1)","size":7,"line":{"color":"rgba(13,148,136,1)"}},"text":"Pair: x2 - x7<br>Rank: 1<br>Stringy05: 0.1375<br>Status: Selected","hoverinfo":"text","type":"scatter","name":"Selected","textfont":{"color":"rgba(13,148,136,1)"},"error_y":{"color":"rgba(13,148,136,1)"},"error_x":{"color":"rgba(13,148,136,1)"},"line":{"color":"rgba(13,148,136,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45],"y":[0.13751245386729696,0.1111210305223328,0.10401059344888559,0.097304702471033913,0.081653827397348958,0.079027858528691416,0.069581274670630078,0.067641771279547014,0.062329721571386366,0.053914795965204175,0.049560075962322196,0.032278899865932388,0.029603565710538817,0.028452388680468954,0.018835462126228004,0.016450168378608746,0.0099670845392454879,0.0082011925245062435,0.0066998992456607865,0.0055038398517003543,0.0046427871730901722,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"type":"scatter","mode":"lines","line":{"color":"#64748B"},"showlegend":false,"marker":{"color":"rgba(44,160,44,1)","line":{"color":"rgba(44,160,44,1)"}},"error_y":{"color":"rgba(44,160,44,1)"},"error_x":{"color":"rgba(44,160,44,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-3bb912dbd05b7f4679d3">{"x":{"visdat":{"e09d3ab52e92":["function () ","plotlyVisDat"],"e09d4d04915a":["function () ","data"]},"cur_data":"e09d4d04915a","attrs":{"e09d3ab52e92":{"x":{},"y":{},"mode":"markers","marker":{"size":7},"text":{},"hoverinfo":"text","color":{},"colors":["#0D9488","#94A3B8"],"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter"},"e09d4d04915a":{"x":{},"y":{},"type":"scatter","mode":"lines","line":{"color":"#64748B"},"showlegend":false,"inherit":false}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"Pairwise scagnostic scree plot","xaxis":{"domain":[0,1],"automargin":true,"title":"Ranked pair position"},"yaxis":{"domain":[0,1],"automargin":true,"title":"stringy05"},"shapes":[{"type":"line","x0":1.5,"x1":1.5,"y0":0,"y1":1,"yref":"paper","line":{"color":"red","dash":"dash"}}],"hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":[2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45],"y":[0.1111210305223328,0.10401059344888559,0.097304702471033913,0.081653827397348958,0.079027858528691416,0.069581274670630078,0.067641771279547014,0.062329721571386366,0.053914795965204175,0.049560075962322196,0.032278899865932388,0.029603565710538817,0.028452388680468954,0.018835462126228004,0.016450168378608746,0.0099670845392454879,0.0082011925245062435,0.0066998992456607865,0.0055038398517003543,0.0046427871730901722,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"mode":"markers","marker":{"color":"rgba(148,163,184,1)","size":7,"line":{"color":"rgba(148,163,184,1)"}},"text":["Pair: x3 - x4<br>Rank: 2<br>Stringy05: 0.1111<br>Status: Not selected","Pair: x4 - x8<br>Rank: 3<br>Stringy05: 0.104<br>Status: Not selected","Pair: x2 - x6<br>Rank: 4<br>Stringy05: 0.0973<br>Status: Not selected","Pair: x4 - x6<br>Rank: 5<br>Stringy05: 0.0817<br>Status: Not selected","Pair: x4 - x10<br>Rank: 6<br>Stringy05: 0.079<br>Status: Not selected","Pair: x1 - x4<br>Rank: 7<br>Stringy05: 0.0696<br>Status: Not selected","Pair: x2 - x4<br>Rank: 8<br>Stringy05: 0.0676<br>Status: Not selected","Pair: x4 - x7<br>Rank: 9<br>Stringy05: 0.0623<br>Status: Not selected","Pair: x4 - x9<br>Rank: 10<br>Stringy05: 0.0539<br>Status: Not selected","Pair: x1 - x2<br>Rank: 11<br>Stringy05: 0.0496<br>Status: Not selected","Pair: x6 - x8<br>Rank: 12<br>Stringy05: 0.0323<br>Status: Not selected","Pair: x5 - x10<br>Rank: 13<br>Stringy05: 0.0296<br>Status: Not selected","Pair: x2 - x3<br>Rank: 14<br>Stringy05: 0.0285<br>Status: Not selected","Pair: x2 - x10<br>Rank: 15<br>Stringy05: 0.0188<br>Status: Not selected","Pair: x2 - x9<br>Rank: 16<br>Stringy05: 0.0165<br>Status: Not selected","Pair: x2 - x8<br>Rank: 17<br>Stringy05: 0.01<br>Status: Not selected","Pair: x8 - x10<br>Rank: 18<br>Stringy05: 0.0082<br>Status: Not selected","Pair: x2 - x5<br>Rank: 19<br>Stringy05: 0.0067<br>Status: Not selected","Pair: x7 - x8<br>Rank: 20<br>Stringy05: 0.0055<br>Status: Not selected","Pair: x6 - x9<br>Rank: 21<br>Stringy05: 0.0046<br>Status: Not selected","Pair: x1 - x3<br>Rank: 22<br>Stringy05: 0<br>Status: Not selected","Pair: x1 - x5<br>Rank: 22<br>Stringy05: 0<br>Status: Not selected","Pair: x1 - x6<br>Rank: 22<br>Stringy05: 0<br>Status: Not selected","Pair: x1 - x7<br>Rank: 22<br>Stringy05: 0<br>Status: Not selected","Pair: x1 - x8<br>Rank: 22<br>Stringy05: 0<br>Status: Not selected","Pair: x1 - x9<br>Rank: 22<br>Stringy05: 0<br>Status: Not selected","Pair: x1 - x10<br>Rank: 22<br>Stringy05: 0<br>Status: Not selected","Pair: x3 - x5<br>Rank: 22<br>Stringy05: 0<br>Status: Not selected","Pair: x3 - x6<br>Rank: 22<br>Stringy05: 0<br>Status: Not selected","Pair: x3 - x7<br>Rank: 22<br>Stringy05: 0<br>Status: Not selected","Pair: x3 - x8<br>Rank: 22<br>Stringy05: 0<br>Status: Not selected","Pair: x3 - x9<br>Rank: 22<br>Stringy05: 0<br>Status: Not selected","Pair: x3 - x10<br>Rank: 22<br>Stringy05: 0<br>Status: Not selected","Pair: x4 - x5<br>Rank: 22<br>Stringy05: 0<br>Status: Not selected","Pair: x5 - x6<br>Rank: 22<br>Stringy05: 0<br>Status: Not selected","Pair: x5 - x7<br>Rank: 22<br>Stringy05: 0<br>Status: Not selected","Pair: x5 - x8<br>Rank: 22<br>Stringy05: 0<br>Status: Not selected","Pair: x5 - x9<br>Rank: 22<br>Stringy05: 0<br>Status: Not selected","Pair: x6 - x7<br>Rank: 22<br>Stringy05: 0<br>Status: Not selected","Pair: x6 - x10<br>Rank: 22<br>Stringy05: 0<br>Status: Not selected","Pair: x7 - x9<br>Rank: 22<br>Stringy05: 0<br>Status: Not selected","Pair: x7 - x10<br>Rank: 22<br>Stringy05: 0<br>Status: Not selected","Pair: x8 - x9<br>Rank: 22<br>Stringy05: 0<br>Status: Not selected","Pair: x9 - x10<br>Rank: 22<br>Stringy05: 0<br>Status: Not selected"],"hoverinfo":["text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text"],"type":"scatter","name":"Not selected","textfont":{"color":"rgba(148,163,184,1)"},"error_y":{"color":"rgba(148,163,184,1)"},"error_x":{"color":"rgba(148,163,184,1)"},"line":{"color":"rgba(148,163,184,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":[1],"y":[0.13751245386729696],"mode":"markers","marker":{"color":"rgba(13,148,136,1)","size":7,"line":{"color":"rgba(13,148,136,1)"}},"text":"Pair: x2 - x7<br>Rank: 1<br>Stringy05: 0.1375<br>Status: Selected","hoverinfo":"text","type":"scatter","name":"Selected","textfont":{"color":"rgba(13,148,136,1)"},"error_y":{"color":"rgba(13,148,136,1)"},"error_x":{"color":"rgba(13,148,136,1)"},"line":{"color":"rgba(13,148,136,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45],"y":[0.13751245386729696,0.1111210305223328,0.10401059344888559,0.097304702471033913,0.081653827397348958,0.079027858528691416,0.069581274670630078,0.067641771279547014,0.062329721571386366,0.053914795965204175,0.049560075962322196,0.032278899865932388,0.029603565710538817,0.028452388680468954,0.018835462126228004,0.016450168378608746,0.0099670845392454879,0.0082011925245062435,0.0066998992456607865,0.0055038398517003543,0.0046427871730901722,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"type":"scatter","mode":"lines","line":{"color":"#64748B"},"showlegend":false,"marker":{"color":"rgba(44,160,44,1)","line":{"color":"rgba(44,160,44,1)"}},"error_y":{"color":"rgba(44,160,44,1)"},"error_x":{"color":"rgba(44,160,44,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 <p>We now restrict the dataset to <strong><code>x2</code>, <code>x7</code>, <code>x3</code>, and <code>x4</code></strong>, the variables appearing in the two highest-ranked pairs identified by scagnostic preprocessing at <span class="math inline">\(45^\circ\)</span>. We then apply Jellyfish to this reduced 4D dataset to investigate whether these variables can reveal the hidden cubic structure.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>selected_vars_45 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"x2"</span>, <span class="st">"x7"</span>, <span class="st">"x3"</span>, <span class="st">"x4"</span>)</span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>X_pre_45 <span class="ot">&lt;-</span> X_45[, selected_vars_45, drop <span class="ot">=</span> <span class="cn">FALSE</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>selected_vars_45 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"x2"</span>, <span class="st">"x7"</span>, <span class="st">"x3"</span>, <span class="st">"x4"</span>)</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>X_pre_45 <span class="ot">&lt;-</span> X_45[, selected_vars_45, drop <span class="ot">=</span> <span class="cn">FALSE</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1111</span>)</span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>time_pre_45 <span class="ot">&lt;-</span> <span class="fu">system.time</span>({</span>
-<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>  res_pre_45 <span class="ot">&lt;-</span> <span class="fu">animate_xy</span>(</span>
-<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>    X_pre_45,</span>
-<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">guided_tour</span>(</span>
-<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>      <span class="at">index_f =</span> stringy_pp,</span>
-<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>      <span class="at">d =</span> <span class="dv">2</span>,</span>
-<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>      <span class="at">search_f =</span> search_jellyfish,</span>
-<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>      <span class="at">n_jellies =</span> <span class="dv">30</span>,</span>
-<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>      <span class="at">max.tries =</span> <span class="dv">25</span></span>
-<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">max_frames =</span> <span class="dv">100</span></span>
-<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb28-15"><a href="#cb28-15" aria-hidden="true" tabindex="-1"></a>})</span>
-<span id="cb28-16"><a href="#cb28-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb28-17"><a href="#cb28-17" aria-hidden="true" tabindex="-1"></a>runtime_pre_45 <span class="ot">&lt;-</span> <span class="fu">unname</span>(time_pre_45[<span class="st">"elapsed"</span>])</span>
-<span id="cb28-18"><a href="#cb28-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb28-19"><a href="#cb28-19" aria-hidden="true" tabindex="-1"></a>best_history_pre_45 <span class="ot">&lt;-</span> res_pre_45 <span class="sc">|&gt;</span></span>
-<span id="cb28-20"><a href="#cb28-20" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(info <span class="sc">==</span> <span class="st">"current_best"</span>)</span>
-<span id="cb28-21"><a href="#cb28-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb28-22"><a href="#cb28-22" aria-hidden="true" tabindex="-1"></a><span class="fu">stopifnot</span>(<span class="fu">nrow</span>(best_history_pre_45) <span class="sc">&gt;</span> <span class="dv">0</span>)</span>
-<span id="cb28-23"><a href="#cb28-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb28-24"><a href="#cb28-24" aria-hidden="true" tabindex="-1"></a>best_row_pre_45 <span class="ot">&lt;-</span> best_history_pre_45 <span class="sc">|&gt;</span></span>
-<span id="cb28-25"><a href="#cb28-25" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">slice_max</span>(index_val, <span class="at">n =</span> <span class="dv">1</span>, <span class="at">with_ties =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb28-26"><a href="#cb28-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb28-27"><a href="#cb28-27" aria-hidden="true" tabindex="-1"></a>A_best_pre_45 <span class="ot">&lt;-</span> best_row_pre_45<span class="sc">$</span>basis[[<span class="dv">1</span>]]</span>
-<span id="cb28-28"><a href="#cb28-28" aria-hidden="true" tabindex="-1"></a>best_score_pre_45 <span class="ot">&lt;-</span> <span class="fu">stringy_pp</span>(X_pre_45 <span class="sc">%*%</span> A_best_pre_45)</span>
-<span id="cb28-29"><a href="#cb28-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb28-30"><a href="#cb28-30" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(</span>
-<span id="cb28-31"><a href="#cb28-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(</span>
-<span id="cb28-32"><a href="#cb28-32" aria-hidden="true" tabindex="-1"></a>    <span class="at">history =</span> best_history_pre_45,</span>
-<span id="cb28-33"><a href="#cb28-33" aria-hidden="true" tabindex="-1"></a>    <span class="at">best_basis =</span> A_best_pre_45,</span>
-<span id="cb28-34"><a href="#cb28-34" aria-hidden="true" tabindex="-1"></a>    <span class="at">best_score =</span> best_score_pre_45,</span>
-<span id="cb28-35"><a href="#cb28-35" aria-hidden="true" tabindex="-1"></a>    <span class="at">runtime_seconds =</span> runtime_pre_45,</span>
-<span id="cb28-36"><a href="#cb28-36" aria-hidden="true" tabindex="-1"></a>    <span class="at">timing =</span> time_pre_45,</span>
-<span id="cb28-37"><a href="#cb28-37" aria-hidden="true" tabindex="-1"></a>    <span class="at">n_jellies =</span> <span class="dv">30</span>,</span>
-<span id="cb28-38"><a href="#cb28-38" aria-hidden="true" tabindex="-1"></a>    <span class="at">max_tries =</span> <span class="dv">25</span>,</span>
-<span id="cb28-39"><a href="#cb28-39" aria-hidden="true" tabindex="-1"></a>    <span class="at">dimensions =</span> <span class="fu">ncol</span>(X_pre_45),</span>
-<span id="cb28-40"><a href="#cb28-40" aria-hidden="true" tabindex="-1"></a>    <span class="at">selected_vars =</span> selected_vars_45,</span>
-<span id="cb28-41"><a href="#cb28-41" aria-hidden="true" tabindex="-1"></a>    <span class="at">angle_deg =</span> <span class="dv">45</span>,</span>
-<span id="cb28-42"><a href="#cb28-42" aria-hidden="true" tabindex="-1"></a>    <span class="at">optimizer_seed =</span> <span class="dv">1111</span></span>
-<span id="cb28-43"><a href="#cb28-43" aria-hidden="true" tabindex="-1"></a>  ),</span>
-<span id="cb28-44"><a href="#cb28-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">file.path</span>(</span>
-<span id="cb28-45"><a href="#cb28-45" aria-hidden="true" tabindex="-1"></a>    results_dir,</span>
-<span id="cb28-46"><a href="#cb28-46" aria-hidden="true" tabindex="-1"></a>    <span class="st">"jellyfish_cubic_45deg_preprocessed4D_30j_25tries_results.rds"</span></span>
-<span id="cb28-47"><a href="#cb28-47" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb28-48"><a href="#cb28-48" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb28-49"><a href="#cb28-49" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb28-50"><a href="#cb28-50" aria-hidden="true" tabindex="-1"></a>bases_pre_45 <span class="ot">&lt;-</span> best_history_pre_45<span class="sc">$</span>basis</span>
-<span id="cb28-51"><a href="#cb28-51" aria-hidden="true" tabindex="-1"></a>bases_gif_pre_45 <span class="ot">&lt;-</span> tourr<span class="sc">::</span><span class="fu">check_dup</span>(bases_pre_45, <span class="fl">0.1</span>)</span>
-<span id="cb28-52"><a href="#cb28-52" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb28-53"><a href="#cb28-53" aria-hidden="true" tabindex="-1"></a>gif_file_pre_45 <span class="ot">&lt;-</span> <span class="fu">file.path</span>(</span>
-<span id="cb28-54"><a href="#cb28-54" aria-hidden="true" tabindex="-1"></a>  results_dir,</span>
-<span id="cb28-55"><a href="#cb28-55" aria-hidden="true" tabindex="-1"></a>  <span class="st">"jellyfish_cubic_45deg_preprocessed4D_30j_25tries.gif"</span></span>
-<span id="cb28-56"><a href="#cb28-56" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb28-57"><a href="#cb28-57" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb28-58"><a href="#cb28-58" aria-hidden="true" tabindex="-1"></a>tourr<span class="sc">::</span><span class="fu">render_gif</span>(</span>
-<span id="cb28-59"><a href="#cb28-59" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> X_pre_45,</span>
-<span id="cb28-60"><a href="#cb28-60" aria-hidden="true" tabindex="-1"></a>  <span class="at">tour_path =</span> tourr<span class="sc">::</span><span class="fu">planned_tour</span>(bases_gif_pre_45),</span>
-<span id="cb28-61"><a href="#cb28-61" aria-hidden="true" tabindex="-1"></a>  <span class="at">display =</span> tourr<span class="sc">::</span><span class="fu">display_xy</span>(),</span>
-<span id="cb28-62"><a href="#cb28-62" aria-hidden="true" tabindex="-1"></a>  <span class="at">gif_file =</span> gif_file_pre_45,</span>
-<span id="cb28-63"><a href="#cb28-63" aria-hidden="true" tabindex="-1"></a>  <span class="at">frames =</span> <span class="dv">100</span>,</span>
-<span id="cb28-64"><a href="#cb28-64" aria-hidden="true" tabindex="-1"></a>  <span class="at">apf =</span> <span class="dv">1</span> <span class="sc">/</span> <span class="dv">12</span></span>
-<span id="cb28-65"><a href="#cb28-65" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1111</span>)</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>time_pre_45 <span class="ot">&lt;-</span> <span class="fu">system.time</span>({</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>  res_pre_45 <span class="ot">&lt;-</span> <span class="fu">animate_xy</span>(</span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>    X_pre_45,</span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">guided_tour</span>(</span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>      <span class="at">index_f =</span> stringy_pp,</span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>      <span class="at">d =</span> <span class="dv">2</span>,</span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>      <span class="at">search_f =</span> search_jellyfish,</span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>      <span class="at">n_jellies =</span> <span class="dv">30</span>,</span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a>      <span class="at">max.tries =</span> <span class="dv">25</span></span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">max_frames =</span> <span class="dv">100</span></span>
+<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb31-16"><a href="#cb31-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-17"><a href="#cb31-17" aria-hidden="true" tabindex="-1"></a>runtime_pre_45 <span class="ot">&lt;-</span> <span class="fu">unname</span>(time_pre_45[<span class="st">"elapsed"</span>])</span>
+<span id="cb31-18"><a href="#cb31-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-19"><a href="#cb31-19" aria-hidden="true" tabindex="-1"></a>best_history_pre_45 <span class="ot">&lt;-</span> res_pre_45 <span class="sc">|&gt;</span></span>
+<span id="cb31-20"><a href="#cb31-20" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(info <span class="sc">==</span> <span class="st">"current_best"</span>)</span>
+<span id="cb31-21"><a href="#cb31-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-22"><a href="#cb31-22" aria-hidden="true" tabindex="-1"></a><span class="fu">stopifnot</span>(<span class="fu">nrow</span>(best_history_pre_45) <span class="sc">&gt;</span> <span class="dv">0</span>)</span>
+<span id="cb31-23"><a href="#cb31-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-24"><a href="#cb31-24" aria-hidden="true" tabindex="-1"></a>best_row_pre_45 <span class="ot">&lt;-</span> best_history_pre_45 <span class="sc">|&gt;</span></span>
+<span id="cb31-25"><a href="#cb31-25" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">slice_max</span>(index_val, <span class="at">n =</span> <span class="dv">1</span>, <span class="at">with_ties =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb31-26"><a href="#cb31-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-27"><a href="#cb31-27" aria-hidden="true" tabindex="-1"></a>A_best_pre_45 <span class="ot">&lt;-</span> best_row_pre_45<span class="sc">$</span>basis[[<span class="dv">1</span>]]</span>
+<span id="cb31-28"><a href="#cb31-28" aria-hidden="true" tabindex="-1"></a>best_score_pre_45 <span class="ot">&lt;-</span> <span class="fu">stringy_pp</span>(X_pre_45 <span class="sc">%*%</span> A_best_pre_45)</span>
+<span id="cb31-29"><a href="#cb31-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-30"><a href="#cb31-30" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(</span>
+<span id="cb31-31"><a href="#cb31-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(</span>
+<span id="cb31-32"><a href="#cb31-32" aria-hidden="true" tabindex="-1"></a>    <span class="at">history =</span> best_history_pre_45,</span>
+<span id="cb31-33"><a href="#cb31-33" aria-hidden="true" tabindex="-1"></a>    <span class="at">best_basis =</span> A_best_pre_45,</span>
+<span id="cb31-34"><a href="#cb31-34" aria-hidden="true" tabindex="-1"></a>    <span class="at">best_score =</span> best_score_pre_45,</span>
+<span id="cb31-35"><a href="#cb31-35" aria-hidden="true" tabindex="-1"></a>    <span class="at">runtime_seconds =</span> runtime_pre_45,</span>
+<span id="cb31-36"><a href="#cb31-36" aria-hidden="true" tabindex="-1"></a>    <span class="at">timing =</span> time_pre_45,</span>
+<span id="cb31-37"><a href="#cb31-37" aria-hidden="true" tabindex="-1"></a>    <span class="at">n_jellies =</span> <span class="dv">30</span>,</span>
+<span id="cb31-38"><a href="#cb31-38" aria-hidden="true" tabindex="-1"></a>    <span class="at">max_tries =</span> <span class="dv">25</span>,</span>
+<span id="cb31-39"><a href="#cb31-39" aria-hidden="true" tabindex="-1"></a>    <span class="at">dimensions =</span> <span class="fu">ncol</span>(X_pre_45),</span>
+<span id="cb31-40"><a href="#cb31-40" aria-hidden="true" tabindex="-1"></a>    <span class="at">selected_vars =</span> selected_vars_45,</span>
+<span id="cb31-41"><a href="#cb31-41" aria-hidden="true" tabindex="-1"></a>    <span class="at">angle_deg =</span> <span class="dv">45</span>,</span>
+<span id="cb31-42"><a href="#cb31-42" aria-hidden="true" tabindex="-1"></a>    <span class="at">optimizer_seed =</span> <span class="dv">1111</span></span>
+<span id="cb31-43"><a href="#cb31-43" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb31-44"><a href="#cb31-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">file.path</span>(</span>
+<span id="cb31-45"><a href="#cb31-45" aria-hidden="true" tabindex="-1"></a>    results_dir,</span>
+<span id="cb31-46"><a href="#cb31-46" aria-hidden="true" tabindex="-1"></a>    <span class="st">"jellyfish_cubic_45deg_preprocessed4D_30j_25tries_results.rds"</span></span>
+<span id="cb31-47"><a href="#cb31-47" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb31-48"><a href="#cb31-48" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb31-49"><a href="#cb31-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-50"><a href="#cb31-50" aria-hidden="true" tabindex="-1"></a>bases_pre_45 <span class="ot">&lt;-</span> best_history_pre_45<span class="sc">$</span>basis</span>
+<span id="cb31-51"><a href="#cb31-51" aria-hidden="true" tabindex="-1"></a>bases_gif_pre_45 <span class="ot">&lt;-</span> tourr<span class="sc">::</span><span class="fu">check_dup</span>(bases_pre_45, <span class="fl">0.1</span>)</span>
+<span id="cb31-52"><a href="#cb31-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-53"><a href="#cb31-53" aria-hidden="true" tabindex="-1"></a>gif_file_pre_45 <span class="ot">&lt;-</span> <span class="fu">file.path</span>(</span>
+<span id="cb31-54"><a href="#cb31-54" aria-hidden="true" tabindex="-1"></a>  results_dir,</span>
+<span id="cb31-55"><a href="#cb31-55" aria-hidden="true" tabindex="-1"></a>  <span class="st">"jellyfish_cubic_45deg_preprocessed4D_30j_25tries.gif"</span></span>
+<span id="cb31-56"><a href="#cb31-56" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb31-57"><a href="#cb31-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-58"><a href="#cb31-58" aria-hidden="true" tabindex="-1"></a>tourr<span class="sc">::</span><span class="fu">render_gif</span>(</span>
+<span id="cb31-59"><a href="#cb31-59" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> X_pre_45,</span>
+<span id="cb31-60"><a href="#cb31-60" aria-hidden="true" tabindex="-1"></a>  <span class="at">tour_path =</span> tourr<span class="sc">::</span><span class="fu">planned_tour</span>(bases_gif_pre_45),</span>
+<span id="cb31-61"><a href="#cb31-61" aria-hidden="true" tabindex="-1"></a>  <span class="at">display =</span> tourr<span class="sc">::</span><span class="fu">display_xy</span>(),</span>
+<span id="cb31-62"><a href="#cb31-62" aria-hidden="true" tabindex="-1"></a>  <span class="at">gif_file =</span> gif_file_pre_45,</span>
+<span id="cb31-63"><a href="#cb31-63" aria-hidden="true" tabindex="-1"></a>  <span class="at">frames =</span> <span class="dv">100</span>,</span>
+<span id="cb31-64"><a href="#cb31-64" aria-hidden="true" tabindex="-1"></a>  <span class="at">apf =</span> <span class="dv">1</span> <span class="sc">/</span> <span class="dv">12</span></span>
+<span id="cb31-65"><a href="#cb31-65" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 </section>
-<section id="display-the-saved-gif-3" class="level3" data-number="13.4">
-<h3 data-number="13.4" class="anchored" data-anchor-id="display-the-saved-gif-3"><span class="header-section-number">13.4</span> Display the saved GIF</h3>
+<section id="display-the-saved-gif-4" class="level3" data-number="15.4">
+<h3 data-number="15.4" class="anchored" data-anchor-id="display-the-saved-gif-4"><span class="header-section-number">15.4</span> Display the saved GIF</h3>
 <div class="cell">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
