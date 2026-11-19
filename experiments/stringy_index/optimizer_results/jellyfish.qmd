@@ -1036,7 +1036,7 @@ knitr::kable(
 
 > Increasing both the Jellyfish population size and the maximum number of search attempts to 200 did not improve optimisation performance. This demonstrates that increasing search effort does not guarantee a better projection in jellyfish optimisation algorithm. Although greater search effort can improve the chances of discovering interesting projections, but performance also depends on the dataset, the optimisation landscape, and the random search trajectory. Consequently, it is difficult to determine how much additional search effort is sufficient. Rather than continuing to increase these parameters, we next investigate whether scagnostic-based preprocessing can reduce the search space and improve the efficiency and effectiveness of Jellyfish.
 
-## Experiment 7: Scagnostic preprocessing before Jellyfish
+## Experiment 7A: Scagnostic preprocessing before Jellyfish
 
 We now investigate whether preprocessing can reduce the dimensionality of the search space while retaining the important structure.
 
@@ -1245,6 +1245,228 @@ knitr::kable(
   align = "c"
 )
 ```
+
+## **Experiment 7B: Scagnostic-informed initialisation of Jellyfish**
+
+In the previous experiment, scagnostic preprocessing was used to reduce the dimensionality of the search space before applying Jellyfish. However, variable selection may remove variables that contribute to interesting linear combinations, even when their individual pairwise scagnostic scores are low.
+
+We now explore an alternative approach in which preprocessing is used to initialise the Jellyfish population rather than reduce the dimensionality of the dataset.
+
+The initial projection bases obtained from `scag_preprocess()` are included in the Jellyfish population, while the remaining bases are generated randomly. All ten original variables are retained throughout the optimisation.
+
+We use 30 jellies and `max.tries = 25`, keeping the remaining settings unchanged. The aim is to investigate whether scagnostic-informed initialisation improves optimisation performance without restricting the search space.
+
+### Extract the initial bases from preprocessing
+
+We reuse `preprocess_result` from Experiment 7A.
+
+```{r}
+#| label: extract-initial-bases
+
+preprocess_result <- scag_preprocess(
+  X,
+  scag = "stringy05",
+  rescale = TRUE
+)
+
+initial_bases <- preprocess_result$initial_bases
+
+```
+Each matrix has 10 rows and 2 columns, corresponding to an orthonormal projection basis in the original 10-dimensional space.
+
+###  Run Jellyfish with scagnostic-informed initial bases
+
+```{r}
+#| label: run-jellyfish-informed-5deg
+#| eval: false
+
+initial_bases <- preprocess_result$initial_bases
+
+set.seed(1111)
+
+time_informed_30 <- system.time({
+  res_informed_30 <- animate_xy(
+    X,
+    guided_tour(
+      index_f = stringy_pp,
+      d = 2,
+      search_f = search_jellyfish,
+      n_jellies = 30,
+      max.tries = 25,
+      initial_bases = initial_bases
+    ),
+    max_frames = 100
+  )
+})
+
+runtime_informed_30 <- unname(time_informed_30["elapsed"])
+
+best_history_informed_30 <- res_informed_30 |>
+  dplyr::filter(info == "current_best")
+
+
+best_row_informed_30 <- best_history_informed_30 |>
+  dplyr::slice_max(index_val, n = 1, with_ties = FALSE)
+
+A_best_informed_30 <- best_row_informed_30$basis[[1]]
+best_score_informed_30 <- stringy_pp(X %*% A_best_informed_30)
+
+initial_best_score_30 <- max(preprocess_result$top_pairs$value)
+
+# Save results
+saveRDS(
+  list(
+    history = best_history_informed_30,
+    best_basis = A_best_informed_30,
+    best_score = best_score_informed_30,
+    initial_best_score = initial_best_score_30,
+    initial_bases = initial_bases,
+    runtime_seconds = runtime_informed_30,
+    timing = time_informed_30,
+    n_jellies = 30,
+    n_informed = length(initial_bases),
+    n_random = 30 - length(initial_bases),
+    max_tries = 25,
+    dimensions = ncol(X),
+    angle_deg = degrees,
+    optimizer_seed = 1111
+  ),
+  file.path(
+    results_dir,
+    "jellyfish_cubic_5deg_10D_informed_30j_25tries_results.rds"
+  )
+)
+
+# Generate and save GIF
+bases_informed_30 <- best_history_informed_30$basis
+bases_gif_informed_30 <- tourr::check_dup(bases_informed_30, 0.1)
+
+gif_file_informed_30 <- file.path(
+  results_dir,
+  "jellyfish_cubic_5deg_10D_informed_30j_25tries.gif"
+)
+
+tourr::render_gif(
+    data = X,
+    tour_path = tourr::planned_tour(bases_gif_informed_30),
+    display = tourr::display_xy(),
+    gif_file = gif_file_informed_30,
+    frames = 100,
+    apf = 1 / 12
+  )
+```
+
+###  Load the saved results
+
+```{r}
+#| label: load-jellyfish-informed-5deg
+#| echo: false
+
+file_informed_30 <- file.path(
+  results_dir,
+  "jellyfish_cubic_5deg_10D_informed_30j_25tries_results.rds"
+)
+
+gif_file_informed_30 <- file.path(
+  results_dir,
+  "jellyfish_cubic_5deg_10D_informed_30j_25tries.gif"
+)
+
+saved_informed_30 <- readRDS(file_informed_30)
+
+A_best_informed_30 <- saved_informed_30$best_basis
+
+best_score_informed_30 <- saved_informed_30$best_score
+
+runtime_informed_30 <- saved_informed_30$runtime_seconds
+
+initial_best_score_30 <- saved_informed_30$initial_best_score
+
+n_informed_30 <- saved_informed_30$n_informed
+
+n_random_30 <- saved_informed_30$n_random
+```
+
+###  Display the saved GIF
+
+```{r}
+#| label: fig-jellyfish-informed-gif-5deg
+#| echo: false
+#| fig-cap: "Jellyfish guided tour with scagnostic-informed initialisation."
+#| out-width: "80%"
+
+knitr::include_graphics(gif_file_informed_30)
+
+```
+
+###  Display the best projection
+
+```{r}
+#| label: fig-jellyfish-best-informed-5deg
+#| fig-cap: "Best projection found using scagnostic-informed initialisation."
+#| fig-width: 7
+#| fig-height: 5
+
+Z_best_informed_30 <- X %*% A_best_informed_30
+
+ggplot(
+  tibble(
+    x = Z_best_informed_30[, 1],
+    y = Z_best_informed_30[, 2]
+  ),
+  aes(x, y)
+) +
+  geom_point(
+    colour = "#2679A8",
+    alpha = 0.7,
+    size = 0.7
+  ) +
+  coord_equal() +
+  labs(
+    title = "Best projection — 10D, informed initialisation",
+    subtitle = paste0(
+      "Stringy05 = ", round(best_score_informed_30, 4)
+    ),
+    x = "Projection 1",
+    y = "Projection 2"
+  ) +
+  theme(aspect.ratio = 1)
+```
+
+
+###  Runtime and best Stringy05
+
+For this experiment, I would also report the **best initial Stringy05 value**. This is important because we want to distinguish what preprocessing already found from what Jellyfish subsequently discovered.
+
+```{r}
+#| label: runtime-jellyfish-informed-5deg
+#| echo: false
+
+knitr::kable(
+  tibble::tibble(
+    Dimensions = ncol(X),
+    Jellies = 30,
+    `Informed bases` = n_informed_30,
+    `Random bases` = n_random_30,
+    `Max tries` = 25,
+    `Runtime (seconds)` = round(runtime_informed_30, 2),
+    `Initial Stringy05` = round(initial_best_score_30, 4),
+    `Best Stringy05` = round(best_score_informed_30, 4),
+    Improvement = round(
+      best_score_informed_30 - initial_best_score_30, 4
+    )
+  ),
+  caption = "Jellyfish optimisation with scagnostic-informed initialisation",
+  align = "c"
+)
+```
+
+
+
+##  Compare all experiments
+
+
+
 ```{r}
 #| label: compare-all-experiments
 #| echo: false
